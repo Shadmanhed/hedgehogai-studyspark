@@ -1,7 +1,26 @@
 import { Button } from "./ui/button";
 import { Brain } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 export const Navbar = () => {
+  const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+    navigate("/login");
+  };
+
   return (
     <nav className="border-b bg-white/80 backdrop-blur-md fixed top-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -20,12 +39,31 @@ export const Navbar = () => {
             <a href="#how-it-works" className="text-muted-foreground hover:text-accent transition-colors">
               How it Works
             </a>
-            <Button variant="ghost" className="text-accent hover:text-accent/90">
-              Sign In
-            </Button>
-            <Button className="bg-accent hover:bg-accent/90 text-white">
-              Get Started
-            </Button>
+            {isAuthenticated ? (
+              <Button 
+                variant="ghost" 
+                className="text-accent hover:text-accent/90"
+                onClick={handleLogout}
+              >
+                Sign Out
+              </Button>
+            ) : (
+              <Button 
+                variant="ghost" 
+                className="text-accent hover:text-accent/90"
+                onClick={() => navigate("/login")}
+              >
+                Sign In
+              </Button>
+            )}
+            {!isAuthenticated && (
+              <Button 
+                className="bg-accent hover:bg-accent/90 text-white"
+                onClick={() => navigate("/login")}
+              >
+                Get Started
+              </Button>
+            )}
           </div>
           
           <Button variant="ghost" className="md:hidden">
