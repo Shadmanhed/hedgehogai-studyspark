@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Auth } from "@/components/Auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { AuthError, Session, AuthChangeEvent } from "@supabase/supabase-js";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ const Login = () => {
 
   useEffect(() => {
     console.log("Checking auth state...");
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session) => {
       console.log("Auth state changed:", event, session);
       if (session) {
         console.log("User is authenticated, redirecting to home");
@@ -22,7 +23,7 @@ const Login = () => {
   }, [navigate]);
 
   useEffect(() => {
-    const handleAuthError = (error: Error) => {
+    const handleAuthError = (error: AuthError) => {
       console.error("Auth error:", error);
       if (error.message.includes("Password should be at least 6 characters")) {
         toast({
@@ -39,7 +40,7 @@ const Login = () => {
       }
     };
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session, error) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session, error?: AuthError) => {
       if (error) {
         handleAuthError(error);
       }
