@@ -13,7 +13,7 @@ export const PomodoroTimer = () => {
   const totalTime = 25 * 60; // 25 minutes in seconds
 
   useEffect(() => {
-    let interval: number;
+    let interval: NodeJS.Timeout;
 
     if (isRunning && timeLeft > 0) {
       interval = setInterval(() => {
