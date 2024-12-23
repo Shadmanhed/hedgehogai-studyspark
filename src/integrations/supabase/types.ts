@@ -36,6 +36,7 @@ export type Database = {
       summaries: {
         Row: {
           created_at: string
+          file_url: string | null
           id: string
           original_text: string
           summary: string
@@ -44,6 +45,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          file_url?: string | null
           id?: string
           original_text: string
           summary: string
@@ -52,6 +54,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          file_url?: string | null
           id?: string
           original_text?: string
           summary?: string

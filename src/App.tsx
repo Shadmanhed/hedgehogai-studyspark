@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Summarizer from "./pages/Summarizer";
 
 const queryClient = new QueryClient();
 
@@ -41,6 +42,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <Index />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/summarizer"
+            element={
+              <ProtectedRoute>
+                <Summarizer />
               </ProtectedRoute>
             }
           />
