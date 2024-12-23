@@ -33,6 +33,33 @@ export type Database = {
         }
         Relationships: []
       }
+      summaries: {
+        Row: {
+          created_at: string
+          id: string
+          original_text: string
+          summary: string
+          title: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          original_text: string
+          summary: string
+          title?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          original_text?: string
+          summary?: string
+          title?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       "User accounts and login": {
         Row: {
           created_at: string
