@@ -15,8 +15,9 @@ serve(async (req) => {
   }
 
   try {
+    console.log('Summarize function called');
     const { text } = await req.json();
-    console.log('Received text for summarization:', text.substring(0, 100) + '...');
+    console.log('Text to summarize:', text.substring(0, 100) + '...');
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',

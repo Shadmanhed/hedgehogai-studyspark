@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
-import { useToast } from "./ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -23,16 +23,24 @@ export const NoteSummarizer = () => {
 
     setIsLoading(true);
     try {
+      console.log('Getting user...');
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
+      console.log('User authenticated:', user.id);
 
+      console.log('Calling summarize function...');
       const { data: summaryResponse, error: summaryError } = await supabase.functions.invoke('summarize', {
         body: { text },
       });
 
-      if (summaryError) throw summaryError;
+      if (summaryError) {
+        console.error('Summary error:', summaryError);
+        throw summaryError;
+      }
+      console.log('Summary generated:', summaryResponse);
 
       // Save the summary to the database
+      console.log('Saving summary to database...');
       const { error: dbError } = await supabase.from('summaries').insert({
         user_id: user.id,
         original_text: text,
@@ -40,7 +48,10 @@ export const NoteSummarizer = () => {
         title: text.split('\n')[0].substring(0, 50) // Use first line as title
       });
 
-      if (dbError) throw dbError;
+      if (dbError) {
+        console.error('Database error:', dbError);
+        throw dbError;
+      }
 
       toast({
         title: "Success",
