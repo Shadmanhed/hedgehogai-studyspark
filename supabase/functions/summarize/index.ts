@@ -36,6 +36,10 @@ serve(async (req) => {
       throw new Error('No text or file URL provided');
     }
 
+    if (!contentToSummarize) {
+      throw new Error('No content to summarize');
+    }
+
     console.log('Content length to summarize:', contentToSummarize.length);
     console.log('Sending request to OpenAI');
     
@@ -60,8 +64,20 @@ serve(async (req) => {
       }),
     });
 
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
     const data = await response.json();
     console.log('Received response from OpenAI');
+    
+    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+      console.error('Unexpected OpenAI response format:', data);
+      throw new Error('Invalid response format from OpenAI');
+    }
+
     const summary = data.choices[0].message.content;
 
     return new Response(JSON.stringify({ summary }), {
