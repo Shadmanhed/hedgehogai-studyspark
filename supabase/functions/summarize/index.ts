@@ -16,9 +16,23 @@ serve(async (req) => {
 
   try {
     console.log('Summarize function called');
-    const { text } = await req.json();
-    console.log('Text to summarize:', text.substring(0, 100) + '...');
+    const { text, fileUrl } = await req.json();
+    
+    let contentToSummarize = '';
+    
+    if (text) {
+      console.log('Processing text input');
+      contentToSummarize = text;
+    } else if (fileUrl) {
+      console.log('Processing file from URL:', fileUrl);
+      // Here we would process the file from the URL
+      // For now, we'll just use the URL as a placeholder
+      contentToSummarize = `Content from file: ${fileUrl}`;
+    } else {
+      throw new Error('No text or file URL provided');
+    }
 
+    console.log('Sending request to OpenAI');
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -30,11 +44,11 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful assistant that creates concise summaries of academic notes. Focus on key points and maintain academic language.'
+            content: 'You are a helpful assistant that creates concise summaries of academic notes and documents. Focus on key points and maintain academic language.'
           },
           {
             role: 'user',
-            content: `Please summarize the following text concisely while maintaining key academic points: ${text}`
+            content: `Please summarize the following text concisely while maintaining key academic points: ${contentToSummarize}`
           }
         ],
       }),
