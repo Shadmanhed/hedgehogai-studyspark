@@ -3,7 +3,7 @@ import { Button } from "./ui/button";
 import { Textarea } from "./ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Upload } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Input } from "./ui/input";
 
@@ -36,11 +36,8 @@ export const NoteSummarizer = () => {
     }
 
     setFile(file);
+    setIsLoading(true);
     
-    // Create form data for the file upload
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
       console.log('Uploading file...');
       const { data: { user } } = await supabase.auth.getUser();
@@ -78,6 +75,8 @@ export const NoteSummarizer = () => {
         description: error.message || "Failed to process file",
         variant: "destructive",
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -151,13 +150,15 @@ export const NoteSummarizer = () => {
           <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">
             Upload Document (PDF, PowerPoint, or Text file)
           </label>
-          <Input
-            id="file-upload"
-            type="file"
-            accept=".pdf,.ppt,.pptx,.txt"
-            onChange={handleFileUpload}
-            className="file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-accent-foreground hover:file:bg-accent/90"
-          />
+          <div className="min-h-[2.5rem]">
+            <Input
+              id="file-upload"
+              type="file"
+              accept=".pdf,.ppt,.pptx,.txt"
+              onChange={handleFileUpload}
+              className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-accent-foreground hover:file:bg-accent/90"
+            />
+          </div>
         </div>
         <div className="relative">
           <div className="absolute inset-0 flex items-center">

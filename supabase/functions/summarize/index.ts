@@ -25,14 +25,20 @@ serve(async (req) => {
       contentToSummarize = text;
     } else if (fileUrl) {
       console.log('Processing file from URL:', fileUrl);
-      // Here we would process the file from the URL
-      // For now, we'll just use the URL as a placeholder
-      contentToSummarize = `Content from file: ${fileUrl}`;
+      // Fetch the file content from the URL
+      const fileResponse = await fetch(fileUrl);
+      if (!fileResponse.ok) {
+        throw new Error('Failed to fetch file content');
+      }
+      const fileContent = await fileResponse.text();
+      contentToSummarize = fileContent;
     } else {
       throw new Error('No text or file URL provided');
     }
 
+    console.log('Content length to summarize:', contentToSummarize.length);
     console.log('Sending request to OpenAI');
+    
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
