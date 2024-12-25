@@ -9,6 +9,60 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      ai_interactions: {
+        Row: {
+          answer: string
+          context_file_url: string | null
+          created_at: string
+          id: string
+          question: string
+          user_id: string
+        }
+        Insert: {
+          answer: string
+          context_file_url?: string | null
+          created_at?: string
+          id?: string
+          question: string
+          user_id: string
+        }
+        Update: {
+          answer?: string
+          context_file_url?: string | null
+          created_at?: string
+          id?: string
+          question?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      flashcards: {
+        Row: {
+          back_content: string
+          created_at: string
+          file_url: string | null
+          front_content: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          back_content: string
+          created_at?: string
+          file_url?: string | null
+          front_content: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          back_content?: string
+          created_at?: string
+          file_url?: string | null
+          front_content?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null

@@ -3,6 +3,8 @@ import { Hero } from "@/components/Hero";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
+import { AITeacher } from "@/components/AITeacher";
+import { FlashcardMaker } from "@/components/FlashcardMaker";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -12,15 +14,23 @@ const Index = () => {
       <Navbar />
       <main className="pt-16">
         <Hero />
-        <section className="py-16 px-4 text-center">
-          <Button 
-            onClick={() => navigate('/summarizer')}
-            className="bg-accent hover:bg-accent/90 text-white px-8 py-4 text-lg"
-          >
-            Try AI Note Summarizer
-          </Button>
-          <div className="mt-8">
-            <PomodoroTimer />
+        <section className="py-16 px-4">
+          <div className="max-w-4xl mx-auto space-y-8">
+            <Button 
+              onClick={() => navigate('/summarizer')}
+              className="bg-accent hover:bg-accent/90 text-white px-8 py-4 text-lg"
+            >
+              Try AI Note Summarizer
+            </Button>
+            
+            <div className="grid md:grid-cols-2 gap-8">
+              <AITeacher />
+              <FlashcardMaker />
+            </div>
+
+            <div className="mt-8">
+              <PomodoroTimer />
+            </div>
           </div>
         </section>
       </main>
