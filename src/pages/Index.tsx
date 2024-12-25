@@ -3,8 +3,6 @@ import { Hero } from "@/components/Hero";
 import { PomodoroTimer } from "@/components/PomodoroTimer";
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
-import { AITeacher } from "@/components/AITeacher";
-import { FlashcardMaker } from "@/components/FlashcardMaker";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -23,11 +21,6 @@ const Index = () => {
               Try AI Note Summarizer
             </Button>
             
-            <div className="grid md:grid-cols-2 gap-8">
-              <AITeacher />
-              <FlashcardMaker />
-            </div>
-
             <div className="mt-8">
               <PomodoroTimer />
             </div>

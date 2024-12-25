@@ -5,12 +5,12 @@ import { Bell, Pause, Play, RotateCcw } from "lucide-react";
 import { useToast } from "./ui/use-toast";
 
 export const PomodoroTimer = () => {
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isRunning, setIsRunning] = useState(false);
   const [progress, setProgress] = useState(100);
   const { toast } = useToast();
 
-  const totalTime = 25 * 60; // 25 minutes in seconds
+  const totalTime = 25 * 60;
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -58,7 +58,7 @@ export const PomodoroTimer = () => {
   return (
     <div className="w-full max-w-sm mx-auto p-6 bg-white rounded-2xl shadow-lg animate-fade-up">
       <h3 className="text-2xl font-heading font-bold mb-4 gradient-text">
-        Study Timer
+        Pomodoro Study Timer
       </h3>
       <div className="mb-6">
         <Progress value={progress} className="h-3" />
