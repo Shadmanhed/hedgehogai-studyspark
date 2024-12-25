@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const groqApiKey = Deno.env.get('Groq_API');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,9 +18,9 @@ serve(async (req) => {
     console.log('Summarize function called');
     const { text, fileUrl } = await req.json();
     
-    if (!openAIApiKey) {
-      console.error('OpenAI API key not found');
-      throw new Error('OpenAI API key not configured');
+    if (!groqApiKey) {
+      console.error('Groq API key not found');
+      throw new Error('Groq API key not configured');
     }
     
     let contentToSummarize = '';
@@ -47,16 +47,16 @@ serve(async (req) => {
     }
 
     console.log('Content length to summarize:', contentToSummarize.length);
-    console.log('Sending request to OpenAI');
+    console.log('Sending request to Groq');
     
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${groqApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-3.5-turbo',  // Fixed model name
+        model: 'mixtral-8x7b-32768',
         messages: [
           {
             role: 'system',
@@ -72,16 +72,16 @@ serve(async (req) => {
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+      console.error('Groq API error:', errorData);
+      throw new Error(`Groq API error: ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
-    console.log('Received response from OpenAI');
+    console.log('Received response from Groq');
     
     if (!data.choices || !data.choices[0] || !data.choices[0].message) {
-      console.error('Unexpected OpenAI response format:', data);
-      throw new Error('Invalid response format from OpenAI');
+      console.error('Unexpected Groq response format:', data);
+      throw new Error('Invalid response format from Groq');
     }
 
     const summary = data.choices[0].message.content;
