@@ -18,6 +18,11 @@ serve(async (req) => {
     console.log('Summarize function called');
     const { text, fileUrl } = await req.json();
     
+    if (!openAIApiKey) {
+      console.error('OpenAI API key not found');
+      throw new Error('OpenAI API key not configured');
+    }
+    
     let contentToSummarize = '';
     
     if (text) {
@@ -28,10 +33,11 @@ serve(async (req) => {
       // Fetch the file content from the URL
       const fileResponse = await fetch(fileUrl);
       if (!fileResponse.ok) {
+        console.error('Failed to fetch file:', fileResponse.status, fileResponse.statusText);
         throw new Error('Failed to fetch file content');
       }
-      const fileContent = await fileResponse.text();
-      contentToSummarize = fileContent;
+      contentToSummarize = await fileResponse.text();
+      console.log('Successfully fetched file content');
     } else {
       throw new Error('No text or file URL provided');
     }
@@ -50,7 +56,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-3.5-turbo',  // Fixed model name
         messages: [
           {
             role: 'system',
@@ -79,13 +85,19 @@ serve(async (req) => {
     }
 
     const summary = data.choices[0].message.content;
+    console.log('Successfully generated summary');
 
     return new Response(JSON.stringify({ summary }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      status: 200,
     });
   } catch (error) {
     console.error('Error in summarize function:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
+    return new Response(
+      JSON.stringify({ 
+        error: error.message || 'An error occurred during summarization',
+        details: error.toString()
+      }), {
       status: 500,
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
