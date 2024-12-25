@@ -1,5 +1,5 @@
 import { Navbar } from "@/components/Navbar";
-import { Steps } from "lucide-react";
+import { ListOrdered } from "lucide-react";
 
 const HowItWorks = () => {
   return (
