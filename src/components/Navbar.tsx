@@ -25,7 +25,7 @@ export const Navbar = () => {
     <nav className="border-b bg-white/80 backdrop-blur-md fixed top-0 w-full z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <div className="flex items-center">
+          <div className="flex items-center cursor-pointer" onClick={() => navigate("/")}>
             <Brain className="w-8 h-8 text-accent mr-2" />
             <span className="text-xl font-heading font-bold gradient-text">
               HedgehogAI
@@ -33,12 +33,47 @@ export const Navbar = () => {
           </div>
           
           <div className="hidden md:flex items-center space-x-8">
-            <a href="#features" className="text-muted-foreground hover:text-accent transition-colors">
+            <Button 
+              variant="ghost" 
+              className="text-muted-foreground hover:text-accent transition-colors"
+              onClick={() => navigate("/features")}
+            >
               Features
-            </a>
-            <a href="#how-it-works" className="text-muted-foreground hover:text-accent transition-colors">
+            </Button>
+            <Button 
+              variant="ghost" 
+              className="text-muted-foreground hover:text-accent transition-colors"
+              onClick={() => navigate("/how-it-works")}
+            >
               How it Works
-            </a>
+            </Button>
+            
+            {isAuthenticated && (
+              <>
+                <Button 
+                  variant="ghost" 
+                  className="text-muted-foreground hover:text-accent transition-colors"
+                  onClick={() => navigate("/summarizer")}
+                >
+                  Summarizer
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="text-muted-foreground hover:text-accent transition-colors"
+                  onClick={() => navigate("/flashcards")}
+                >
+                  Flashcards
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  className="text-muted-foreground hover:text-accent transition-colors"
+                  onClick={() => navigate("/ai-teacher")}
+                >
+                  AI Teacher
+                </Button>
+              </>
+            )}
+
             {isAuthenticated ? (
               <Button 
                 variant="ghost" 
@@ -48,21 +83,21 @@ export const Navbar = () => {
                 Sign Out
               </Button>
             ) : (
-              <Button 
-                variant="ghost" 
-                className="text-accent hover:text-accent/90"
-                onClick={() => navigate("/login")}
-              >
-                Sign In
-              </Button>
-            )}
-            {!isAuthenticated && (
-              <Button 
-                className="bg-accent hover:bg-accent/90 text-white"
-                onClick={() => navigate("/login")}
-              >
-                Get Started
-              </Button>
+              <>
+                <Button 
+                  variant="ghost" 
+                  className="text-accent hover:text-accent/90"
+                  onClick={() => navigate("/login")}
+                >
+                  Sign In
+                </Button>
+                <Button 
+                  className="bg-accent hover:bg-accent/90 text-white"
+                  onClick={() => navigate("/login")}
+                >
+                  Get Started
+                </Button>
+              </>
             )}
           </div>
           

@@ -8,6 +8,10 @@ import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Summarizer from "./pages/Summarizer";
+import AITeacherPage from "./pages/AITeacher";
+import FlashcardMakerPage from "./pages/FlashcardMaker";
+import Features from "./pages/Features";
+import HowItWorks from "./pages/HowItWorks";
 
 const queryClient = new QueryClient();
 
@@ -37,19 +41,30 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/login" element={<Login />} />
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Index />
-              </ProtectedRoute>
-            }
-          />
+          <Route path="/" element={<Index />} />
+          <Route path="/features" element={<Features />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
           <Route
             path="/summarizer"
             element={
               <ProtectedRoute>
                 <Summarizer />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/ai-teacher"
+            element={
+              <ProtectedRoute>
+                <AITeacherPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/flashcards"
+            element={
+              <ProtectedRoute>
+                <FlashcardMakerPage />
               </ProtectedRoute>
             }
           />
