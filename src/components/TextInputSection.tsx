@@ -24,12 +24,14 @@ export const TextInputSection = ({ text, setText, isLoading }: TextInputSectionP
     }
 
     try {
-      console.log('Getting user...');
+      console.log('Starting summarization process...');
+      console.log('Text length:', text.length);
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
       console.log('User authenticated:', user.id);
 
-      console.log('Calling summarize function...');
+      console.log('Calling summarize function with text input...');
       const { data: summaryResponse, error: summaryError } = await supabase.functions.invoke('summarize', {
         body: { text },
       });
@@ -38,7 +40,13 @@ export const TextInputSection = ({ text, setText, isLoading }: TextInputSectionP
         console.error('Summary error:', summaryError);
         throw summaryError;
       }
-      console.log('Summary generated:', summaryResponse);
+
+      if (!summaryResponse?.summary) {
+        console.error('No summary received in response:', summaryResponse);
+        throw new Error('No summary received from the server');
+      }
+
+      console.log('Summary received:', summaryResponse);
 
       console.log('Saving summary to database...');
       const { error: dbError } = await supabase.from('summaries').insert({
@@ -53,17 +61,19 @@ export const TextInputSection = ({ text, setText, isLoading }: TextInputSectionP
         throw dbError;
       }
 
+      console.log('Summary saved successfully');
+
       toast({
         title: "Success",
         description: "Your notes have been summarized and saved!",
       });
 
-      setText("");
+      setText(summaryResponse.summary);
     } catch (error) {
-      console.error('Error:', error);
+      console.error('Error in handleSummarize:', error);
       toast({
         title: "Error",
-        description: error.message || "Failed to summarize notes",
+        description: error.message || "Failed to summarize notes. Please try again.",
         variant: "destructive",
       });
     }

@@ -9,7 +9,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -26,18 +25,17 @@ serve(async (req) => {
     let contentToSummarize = '';
     
     if (text) {
-      console.log('Processing text input');
+      console.log('Processing text input, length:', text.length);
       contentToSummarize = text;
     } else if (fileUrl) {
       console.log('Processing file from URL:', fileUrl);
-      // Fetch the file content from the URL
       const fileResponse = await fetch(fileUrl);
       if (!fileResponse.ok) {
         console.error('Failed to fetch file:', fileResponse.status, fileResponse.statusText);
         throw new Error('Failed to fetch file content');
       }
       contentToSummarize = await fileResponse.text();
-      console.log('Successfully fetched file content');
+      console.log('Successfully fetched file content, length:', contentToSummarize.length);
     } else {
       throw new Error('No text or file URL provided');
     }
@@ -46,8 +44,7 @@ serve(async (req) => {
       throw new Error('No content to summarize');
     }
 
-    console.log('Content length to summarize:', contentToSummarize.length);
-    console.log('Sending request to Groq');
+    console.log('Sending request to Groq API...');
     
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
@@ -60,13 +57,15 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful assistant that creates concise summaries of academic notes and documents. Focus on key points and maintain academic language.'
+            content: 'You are a helpful assistant that creates concise summaries of academic notes and documents. Focus on key points and maintain academic language. Your summary should be comprehensive yet concise.'
           },
           {
             role: 'user',
-            content: `Please summarize the following text concisely while maintaining key academic points: ${contentToSummarize}`
+            content: `Please summarize the following text, focusing on the main academic concepts and key points: ${contentToSummarize}`
           }
         ],
+        temperature: 0.7,
+        max_tokens: 2000,
       }),
     });
 
@@ -77,15 +76,15 @@ serve(async (req) => {
     }
 
     const data = await response.json();
-    console.log('Received response from Groq');
+    console.log('Received response from Groq API');
     
-    if (!data.choices || !data.choices[0] || !data.choices[0].message) {
+    if (!data.choices?.[0]?.message?.content) {
       console.error('Unexpected Groq response format:', data);
-      throw new Error('Invalid response format from Groq');
+      throw new Error('Invalid response format from Groq API');
     }
 
     const summary = data.choices[0].message.content;
-    console.log('Successfully generated summary');
+    console.log('Successfully generated summary, length:', summary.length);
 
     return new Response(JSON.stringify({ summary }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
