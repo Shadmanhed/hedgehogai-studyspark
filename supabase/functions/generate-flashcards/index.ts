@@ -51,11 +51,14 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are an expert at creating educational flashcards. Create concise, clear flashcards from the provided content. Return them in a format that can be easily parsed into front and back content.'
+            content: `You are an expert at creating educational flashcards. Create exactly 5 flashcards from the provided content. 
+            You must return them in valid JSON format as an array of objects, each with 'front' and 'back' properties.
+            Example format: [{"front": "What is X?", "back": "X is Y"}]
+            Make sure your response contains ONLY the JSON array, no other text.`
           },
           {
             role: 'user',
-            content: `Generate 5 flashcards from this content. Format them as a JSON array of objects with 'front' and 'back' properties: ${content}`
+            content: `Generate 5 flashcards from this content in the specified JSON format: ${content}`
           }
         ],
         temperature: 0.7,
@@ -71,10 +74,23 @@ serve(async (req) => {
 
     const data = await response.json();
     console.log('Groq API response received');
-    const flashcardsText = data.choices[0].message.content;
+    let flashcardsText = data.choices[0].message.content;
+    
+    // Clean up the response to ensure it's valid JSON
+    flashcardsText = flashcardsText.trim();
+    // Remove any markdown code block markers if present
+    flashcardsText = flashcardsText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
     
     try {
+      console.log('Attempting to parse flashcards JSON:', flashcardsText);
       const flashcards = JSON.parse(flashcardsText);
+      
+      // Validate the structure
+      if (!Array.isArray(flashcards) || !flashcards.every(card => 
+        card && typeof card === 'object' && 'front' in card && 'back' in card)) {
+        throw new Error('Invalid flashcard format received');
+      }
+      
       return new Response(
         JSON.stringify({ flashcards }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
