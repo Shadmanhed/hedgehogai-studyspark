@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+const groqApiKey = Deno.env.get('Groq_API');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -23,15 +23,15 @@ serve(async (req) => {
     }
     const content = await fileResponse.text();
 
-    console.log('Generating flashcards from content...');
-    const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    console.log('Generating flashcards from content using Groq API...');
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${openAIApiKey}`,
+        'Authorization': `Bearer ${groqApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'mixtral-8x7b-32768',
         messages: [
           {
             role: 'system',
@@ -42,13 +42,15 @@ serve(async (req) => {
             content: `Generate 5 flashcards from this content. Format them as a JSON array of objects with 'front' and 'back' properties: ${content}`
           }
         ],
+        temperature: 0.7,
+        max_tokens: 2000,
       }),
     });
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+      console.error('Groq API error:', errorData);
+      throw new Error(`Groq API error: ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
