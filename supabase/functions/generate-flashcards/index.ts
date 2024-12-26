@@ -52,13 +52,13 @@ serve(async (req) => {
           {
             role: 'system',
             content: `You are an expert at creating educational flashcards. Create exactly 5 flashcards from the provided content. 
-            You must return them in valid JSON format as an array of objects, each with 'front' and 'back' properties.
-            Example format: [{"front": "What is X?", "back": "X is Y"}]
-            Make sure your response contains ONLY the JSON array, no other text.`
+            Format your response as a valid JSON array of objects with 'front' and 'back' properties.
+            Example: [{"front": "Question?", "back": "Answer"}]
+            IMPORTANT: Your response must contain ONLY the JSON array, with no additional text, markdown formatting, or code blocks.`
           },
           {
             role: 'user',
-            content: `Generate 5 flashcards from this content in the specified JSON format: ${content}`
+            content: `Generate 5 flashcards from this content: ${content}`
           }
         ],
         temperature: 0.7,
@@ -74,21 +74,40 @@ serve(async (req) => {
 
     const data = await response.json();
     console.log('Groq API response received');
-    let flashcardsText = data.choices[0].message.content;
     
-    // Clean up the response to ensure it's valid JSON
+    // Get the raw content from the response
+    let flashcardsText = data.choices[0].message.content;
+    console.log('Raw Groq API response content:', flashcardsText);
+    
+    // Clean up the response
     flashcardsText = flashcardsText.trim();
+    
     // Remove any markdown code block markers if present
     flashcardsText = flashcardsText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
+    console.log('Cleaned flashcards text:', flashcardsText);
     
     try {
-      console.log('Attempting to parse flashcards JSON:', flashcardsText);
       const flashcards = JSON.parse(flashcardsText);
       
       // Validate the structure
-      if (!Array.isArray(flashcards) || !flashcards.every(card => 
-        card && typeof card === 'object' && 'front' in card && 'back' in card)) {
-        throw new Error('Invalid flashcard format received');
+      if (!Array.isArray(flashcards)) {
+        console.error('Parsed content is not an array:', flashcards);
+        throw new Error('Response is not an array of flashcards');
+      }
+      
+      // Validate each flashcard
+      const validFlashcards = flashcards.every(card => 
+        card && 
+        typeof card === 'object' && 
+        'front' in card && 
+        'back' in card &&
+        typeof card.front === 'string' &&
+        typeof card.back === 'string'
+      );
+      
+      if (!validFlashcards) {
+        console.error('Invalid flashcard format in array:', flashcards);
+        throw new Error('One or more flashcards have invalid format');
       }
       
       return new Response(
@@ -96,9 +115,9 @@ serve(async (req) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     } catch (parseError) {
-      console.error('Error parsing flashcards JSON:', parseError);
-      console.log('Raw flashcards text:', flashcardsText);
-      throw new Error('Failed to parse generated flashcards as JSON');
+      console.error('Error parsing or validating flashcards:', parseError);
+      console.log('Failed to parse text:', flashcardsText);
+      throw new Error(`Failed to process flashcards: ${parseError.message}`);
     }
   } catch (error) {
     console.error('Error in generate-flashcards function:', error);
