@@ -15,15 +15,31 @@ serve(async (req) => {
 
   try {
     const { fileUrl } = await req.json();
+    console.log('Processing file URL:', fileUrl);
     
     // Fetch the file content
     const fileResponse = await fetch(fileUrl);
     if (!fileResponse.ok) {
       throw new Error('Failed to fetch file content');
     }
-    const content = await fileResponse.text();
 
-    console.log('Generating flashcards from content using Groq API...');
+    // Get the content type from the response
+    const contentType = fileResponse.headers.get('content-type');
+    console.log('File content type:', contentType);
+
+    // Convert file content to text, handling different file types
+    let content;
+    if (contentType?.includes('application/pdf') || 
+        contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
+        contentType?.includes('application/vnd.ms-powerpoint')) {
+      // For binary files, we'll use the URL directly
+      content = `Please generate flashcards from this ${contentType} file: ${fileUrl}`;
+    } else {
+      // For text files, we can read the content directly
+      content = await fileResponse.text();
+    }
+
+    console.log('Sending content to Groq API...');
     const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -54,13 +70,20 @@ serve(async (req) => {
     }
 
     const data = await response.json();
+    console.log('Groq API response received');
     const flashcardsText = data.choices[0].message.content;
-    const flashcards = JSON.parse(flashcardsText);
-
-    return new Response(
-      JSON.stringify({ flashcards }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
+    
+    try {
+      const flashcards = JSON.parse(flashcardsText);
+      return new Response(
+        JSON.stringify({ flashcards }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    } catch (parseError) {
+      console.error('Error parsing flashcards JSON:', parseError);
+      console.log('Raw flashcards text:', flashcardsText);
+      throw new Error('Failed to parse generated flashcards as JSON');
+    }
   } catch (error) {
     console.error('Error in generate-flashcards function:', error);
     return new Response(
