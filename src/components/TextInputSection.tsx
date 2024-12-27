@@ -8,9 +8,10 @@ interface TextInputSectionProps {
   text: string;
   setText: (text: string) => void;
   isLoading: boolean;
+  onSummaryGenerated: (summary: string) => void;
 }
 
-export const TextInputSection = ({ text, setText, isLoading }: TextInputSectionProps) => {
+export const TextInputSection = ({ text, setText, isLoading, onSummaryGenerated }: TextInputSectionProps) => {
   const { toast } = useToast();
 
   const handleSummarize = async () => {
@@ -68,7 +69,7 @@ export const TextInputSection = ({ text, setText, isLoading }: TextInputSectionP
         description: "Your notes have been summarized and saved!",
       });
 
-      setText(summaryResponse.summary);
+      onSummaryGenerated(summaryResponse.summary);
     } catch (error) {
       console.error('Error in handleSummarize:', error);
       toast({

@@ -39,14 +39,16 @@ export const FlashcardUploader = ({ isLoading, onFileUpload }: FlashcardUploader
         <label htmlFor="file-upload" className="block text-sm font-medium mb-1">
           Upload Document (PDF, PowerPoint, or Text file)
         </label>
-        <Input
-          id="file-upload"
-          type="file"
-          accept=".pdf,.ppt,.pptx,.txt"
-          onChange={handleFileChange}
-          disabled={isLoading}
-          className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-accent-foreground hover:file:bg-accent/90"
-        />
+        <div className="min-h-[2.5rem] w-full">
+          <Input
+            id="file-upload"
+            type="file"
+            accept=".pdf,.ppt,.pptx,.txt"
+            onChange={handleFileChange}
+            disabled={isLoading}
+            className="w-full h-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-accent-foreground hover:file:bg-accent/90 cursor-pointer"
+          />
+        </div>
       </div>
       {isLoading && (
         <div className="text-sm text-muted-foreground">

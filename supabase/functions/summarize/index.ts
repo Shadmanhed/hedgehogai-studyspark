@@ -34,8 +34,19 @@ serve(async (req) => {
         console.error('Failed to fetch file:', fileResponse.status, fileResponse.statusText);
         throw new Error('Failed to fetch file content');
       }
-      contentToSummarize = await fileResponse.text();
-      console.log('Successfully fetched file content, length:', contentToSummarize.length);
+      
+      const contentType = fileResponse.headers.get('content-type');
+      console.log('File content type:', contentType);
+      
+      if (contentType?.includes('application/pdf') || 
+          contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
+          contentType?.includes('application/vnd.ms-powerpoint')) {
+        contentToSummarize = `Please analyze and summarize this ${contentType} document available at: ${fileUrl}. Focus on extracting and organizing the main academic concepts and key points.`;
+      } else {
+        contentToSummarize = await fileResponse.text();
+      }
+      
+      console.log('Successfully processed file content');
     } else {
       throw new Error('No text or file URL provided');
     }
@@ -57,11 +68,17 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful assistant that creates concise summaries of academic notes and documents. Focus on key points and maintain academic language. Your summary should be comprehensive yet concise.'
+            content: `You are an expert academic summarizer. Your task is to:
+            1. Analyze the provided content thoroughly
+            2. Identify and extract the main academic concepts and key points
+            3. Create a well-structured, comprehensive summary
+            4. Maintain academic language and terminology
+            5. Ensure the summary is clear and concise while preserving important details
+            6. Use bullet points or numbered lists where appropriate for better organization`
           },
           {
             role: 'user',
-            content: `Please summarize the following text, focusing on the main academic concepts and key points: ${contentToSummarize}`
+            content: `Please provide a comprehensive academic summary of the following content: ${contentToSummarize}`
           }
         ],
         temperature: 0.7,

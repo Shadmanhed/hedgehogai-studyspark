@@ -5,11 +5,11 @@ import { TextInputSection } from "./TextInputSection";
 import { Textarea } from "./ui/textarea";
 
 export const NoteSummarizer = () => {
-  const [text, setText] = useState("");
+  const [summary, setSummary] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleSummaryGenerated = (summary: string) => {
-    setText(summary);
+  const handleSummaryGenerated = (generatedSummary: string) => {
+    setSummary(generatedSummary);
   };
 
   return (
@@ -32,21 +32,22 @@ export const NoteSummarizer = () => {
             </div>
           </div>
           <TextInputSection 
-            text={text}
-            setText={setText}
+            text=""
+            setText={() => {}}
             isLoading={isLoading}
+            onSummaryGenerated={handleSummaryGenerated}
           />
         </CardContent>
       </Card>
 
-      {text && (
-        <Card className="w-full max-w-3xl mx-auto">
+      {summary && (
+        <Card className="w-full max-w-3xl mx-auto animate-fade-up">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center">Summary Output</CardTitle>
           </CardHeader>
           <CardContent>
             <Textarea
-              value={text}
+              value={summary}
               readOnly
               className="min-h-[200px] bg-muted"
               placeholder="Your summary will appear here..."
