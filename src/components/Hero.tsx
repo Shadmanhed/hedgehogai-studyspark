@@ -9,8 +9,8 @@ export const Hero = () => {
           Study Smarter with HedgehogAI
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground mb-8">
-          Transform your learning experience with AI-powered study tools. Create summaries,
-          flashcards, and get personalized tutoring - all in one place.
+          Enhance your learning with AI-powered study tools. Get precise summaries,
+          effective flashcards, and expert tutoring - all tailored to your needs.
         </p>
         <Button
           size="lg"
@@ -23,25 +23,25 @@ export const Hero = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-16 w-full max-w-6xl mx-auto p-4">
         <div className="feature-card animate-fade-up" style={{ animationDelay: "0.1s" }}>
           <BookOpen className="w-12 h-12 text-secondary mb-4" />
-          <h3 className="text-xl font-semibold mb-2">AI Note Summarizer</h3>
+          <h3 className="text-xl font-semibold mb-2">Advanced Note Summarizer</h3>
           <p className="text-muted-foreground">
-            Upload your notes and get concise, easy-to-review summaries instantly.
+            Transform your study materials into clear, comprehensive summaries that retain key academic concepts and important details.
           </p>
         </div>
 
         <div className="feature-card animate-fade-up" style={{ animationDelay: "0.2s" }}>
           <Brain className="w-12 h-12 text-secondary mb-4" />
-          <h3 className="text-xl font-semibold mb-2">Flashcard Generator</h3>
+          <h3 className="text-xl font-semibold mb-2">Smart Flashcard Creator</h3>
           <p className="text-muted-foreground">
-            Automatically create effective flashcards from your study materials.
+            Generate well-structured flashcards that highlight essential concepts and help reinforce your understanding effectively.
           </p>
         </div>
 
         <div className="feature-card animate-fade-up" style={{ animationDelay: "0.3s" }}>
           <GraduationCap className="w-12 h-12 text-secondary mb-4" />
-          <h3 className="text-xl font-semibold mb-2">AI Teacher</h3>
+          <h3 className="text-xl font-semibold mb-2">Intelligent AI Teacher</h3>
           <p className="text-muted-foreground">
-            Get personalized explanations and answers to your questions 24/7.
+            Get detailed explanations and step-by-step guidance tailored to your learning style and academic level.
           </p>
         </div>
       </div>

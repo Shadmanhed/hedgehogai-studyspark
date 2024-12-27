@@ -83,13 +83,13 @@ export const FileUploadSection = ({ onSummaryGenerated, setIsLoading }: FileUplo
       <label htmlFor="file-upload" className="block text-sm font-medium text-gray-700">
         Upload Document (PDF, PowerPoint, or Text file)
       </label>
-      <div className="min-h-[2.5rem]">
+      <div className="min-h-[2.5rem] w-full">
         <Input
           id="file-upload"
           type="file"
           accept=".pdf,.ppt,.pptx,.txt"
           onChange={handleFileUpload}
-          className="w-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-accent-foreground hover:file:bg-accent/90"
+          className="w-full h-full file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-accent file:text-accent-foreground hover:file:bg-accent/90 cursor-pointer"
         />
       </div>
     </div>
