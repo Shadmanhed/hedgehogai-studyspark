@@ -5,7 +5,7 @@ export const Hero = () => {
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-16 bg-gradient-to-b from-primary to-white">
       <div className="text-center max-w-4xl mx-auto animate-fade-up">
-        <h1 className="text-4xl md:text-6xl font-bold mb-6 gradient-text">
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 gradient-text tracking-normal leading-tight">
           Study Smarter with HedgehogAI
         </h1>
         <p className="text-lg md:text-xl text-muted-foreground mb-8">
