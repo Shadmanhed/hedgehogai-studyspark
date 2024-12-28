@@ -16,7 +16,6 @@ interface Flashcard {
 export const FlashcardMaker = () => {
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
-  const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null);
 
   const { data: flashcards, refetch: refetchFlashcards } = useQuery({
     queryKey: ['flashcards'],
@@ -114,21 +113,12 @@ export const FlashcardMaker = () => {
     }
   };
 
-  const handleAddToDeck = async (flashcardId: string) => {
-    if (!selectedDeckId) {
-      toast({
-        title: "Error",
-        description: "Please select a deck first",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleAddToDeck = async (flashcardId: string, deckId: string) => {
     try {
       const { error } = await supabase
         .from('deck_flashcards')
         .insert([{
-          deck_id: selectedDeckId,
+          deck_id: deckId,
           flashcard_id: flashcardId,
         }]);
 
@@ -160,7 +150,7 @@ export const FlashcardMaker = () => {
 
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">Manage Decks</h3>
-        <DeckManager onDeckSelect={setSelectedDeckId} />
+        <DeckManager onDeckSelect={() => {}} />
       </div>
 
       {flashcards && flashcards.length > 0 && (

@@ -2,17 +2,39 @@ import { Card } from "./ui/card";
 import { Button } from "./ui/button";
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FlashcardProps {
   id: string;
   frontContent: string;
   backContent: string;
   onDelete: (id: string) => void;
-  onAddToDeck: (id: string) => void;
+  onAddToDeck: (id: string, deckId: string) => void;
 }
 
 export const Flashcard = ({ id, frontContent, backContent, onDelete, onAddToDeck }: FlashcardProps) => {
   const [showBack, setShowBack] = useState(false);
+
+  const { data: decks } = useQuery({
+    queryKey: ['decks'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('decks')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data;
+    }
+  });
 
   return (
     <div className="relative group">
@@ -31,7 +53,7 @@ export const Flashcard = ({ id, frontContent, backContent, onDelete, onAddToDeck
           Click to flip
         </p>
       </Card>
-      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2">
         <Button
           variant="destructive"
           size="icon"
@@ -39,20 +61,25 @@ export const Flashcard = ({ id, frontContent, backContent, onDelete, onAddToDeck
             e.stopPropagation();
             onDelete(id);
           }}
-          className="mr-2"
         >
           <Trash2 className="h-4 w-4" />
         </Button>
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={(e) => {
-            e.stopPropagation();
-            onAddToDeck(id);
+        <Select
+          onValueChange={(deckId) => {
+            onAddToDeck(id, deckId);
           }}
         >
-          Add to Deck
-        </Button>
+          <SelectTrigger className="w-[140px] bg-white" onClick={(e) => e.stopPropagation()}>
+            <SelectValue placeholder="Add to deck" />
+          </SelectTrigger>
+          <SelectContent>
+            {decks?.map((deck) => (
+              <SelectItem key={deck.id} value={deck.id}>
+                {deck.name}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
