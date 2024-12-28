@@ -18,9 +18,17 @@ interface FlashcardProps {
   backContent: string;
   onDelete: (id: string) => void;
   onAddToDeck: (id: string, deckId: string) => void;
+  hideAddToDeck?: boolean;
 }
 
-export const Flashcard = ({ id, frontContent, backContent, onDelete, onAddToDeck }: FlashcardProps) => {
+export const Flashcard = ({ 
+  id, 
+  frontContent, 
+  backContent, 
+  onDelete, 
+  onAddToDeck,
+  hideAddToDeck = false 
+}: FlashcardProps) => {
   const [showBack, setShowBack] = useState(false);
 
   const { data: decks } = useQuery({
@@ -64,22 +72,24 @@ export const Flashcard = ({ id, frontContent, backContent, onDelete, onAddToDeck
         >
           <Trash2 className="h-4 w-4" />
         </Button>
-        <Select
-          onValueChange={(deckId) => {
-            onAddToDeck(id, deckId);
-          }}
-        >
-          <SelectTrigger className="w-[140px] bg-white" onClick={(e) => e.stopPropagation()}>
-            <SelectValue placeholder="Add to deck" />
-          </SelectTrigger>
-          <SelectContent>
-            {decks?.map((deck) => (
-              <SelectItem key={deck.id} value={deck.id}>
-                {deck.name}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        {!hideAddToDeck && (
+          <Select
+            onValueChange={(deckId) => {
+              onAddToDeck(id, deckId);
+            }}
+          >
+            <SelectTrigger className="w-[140px] bg-white" onClick={(e) => e.stopPropagation()}>
+              <SelectValue placeholder="Add to deck" />
+            </SelectTrigger>
+            <SelectContent>
+              {decks?.map((deck) => (
+                <SelectItem key={deck.id} value={deck.id}>
+                  {deck.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import AITeacherPage from "./pages/AITeacher";
 import FlashcardMakerPage from "./pages/FlashcardMaker";
 import Features from "./pages/Features";
 import HowItWorks from "./pages/HowItWorks";
+import { DeckFlashcards } from "./components/DeckFlashcards";
 
 const queryClient = new QueryClient();
 
@@ -65,6 +66,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <FlashcardMakerPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/flashcards/deck/:deckId"
+            element={
+              <ProtectedRoute>
+                <DeckFlashcards />
               </ProtectedRoute>
             }
           />

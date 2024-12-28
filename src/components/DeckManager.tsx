@@ -5,6 +5,7 @@ import { Card } from "./ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 interface Deck {
   id: string;
@@ -12,9 +13,10 @@ interface Deck {
   created_at: string;
 }
 
-export const DeckManager = ({ onDeckSelect }: { onDeckSelect: (deckId: string) => void }) => {
+export const DeckManager = () => {
   const [newDeckName, setNewDeckName] = useState("");
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const { data: decks, refetch: refetchDecks } = useQuery({
     queryKey: ['decks'],
@@ -82,7 +84,7 @@ export const DeckManager = ({ onDeckSelect }: { onDeckSelect: (deckId: string) =
           <Card 
             key={deck.id}
             className="p-4 cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => onDeckSelect(deck.id)}
+            onClick={() => navigate(`/flashcards/deck/${deck.id}`)}
           >
             <h3 className="font-semibold">{deck.name}</h3>
             <p className="text-sm text-muted-foreground">
