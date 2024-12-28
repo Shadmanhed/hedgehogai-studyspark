@@ -1,17 +1,10 @@
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { Card } from "./ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-
-interface Deck {
-  id: string;
-  name: string;
-  created_at: string;
-}
 
 export const DeckManager = () => {
   const [newDeckName, setNewDeckName] = useState("");
@@ -27,27 +20,30 @@ export const DeckManager = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as Deck[];
+      return data;
     }
   });
 
-  const createDeck = async () => {
-    if (!newDeckName.trim()) {
-      toast({
-        title: "Error",
-        description: "Please enter a deck name",
-        variant: "destructive",
-      });
-      return;
-    }
-
+  const handleCreateDeck = async () => {
     try {
+      if (!newDeckName.trim()) {
+        toast({
+          title: "Error",
+          description: "Please enter a deck name",
+          variant: "destructive",
+        });
+        return;
+      }
+
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error("User not authenticated");
 
       const { error } = await supabase
         .from('decks')
-        .insert([{ name: newDeckName.trim(), user_id: user.id }]);
+        .insert([{
+          user_id: user.id,
+          name: newDeckName.trim(),
+        }]);
 
       if (error) throw error;
 
@@ -68,6 +64,10 @@ export const DeckManager = () => {
     }
   };
 
+  const handleDeckClick = (deckId: string) => {
+    navigate(`/flashcards/deck/${deckId}`);
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2">
@@ -75,24 +75,32 @@ export const DeckManager = () => {
           placeholder="Enter deck name"
           value={newDeckName}
           onChange={(e) => setNewDeckName(e.target.value)}
+          onKeyPress={(e) => {
+            if (e.key === 'Enter') {
+              handleCreateDeck();
+            }
+          }}
         />
-        <Button onClick={createDeck}>Create Deck</Button>
+        <Button onClick={handleCreateDeck}>Create Deck</Button>
       </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {decks?.map((deck) => (
-          <Card 
-            key={deck.id}
-            className="p-4 cursor-pointer hover:shadow-lg transition-shadow"
-            onClick={() => navigate(`/flashcards/deck/${deck.id}`)}
-          >
-            <h3 className="font-semibold">{deck.name}</h3>
-            <p className="text-sm text-muted-foreground">
-              Created: {new Date(deck.created_at).toLocaleDateString()}
-            </p>
-          </Card>
-        ))}
-      </div>
+
+      {decks && decks.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {decks.map((deck) => (
+            <Button
+              key={deck.id}
+              variant="outline"
+              className="h-auto py-4 px-6 text-left flex flex-col items-start"
+              onClick={() => handleDeckClick(deck.id)}
+            >
+              <span className="font-semibold">{deck.name}</span>
+              <span className="text-sm text-muted-foreground">
+                Created {new Date(deck.created_at).toLocaleDateString()}
+              </span>
+            </Button>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

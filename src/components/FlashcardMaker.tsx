@@ -150,7 +150,7 @@ export const FlashcardMaker = () => {
 
       <div className="space-y-4">
         <h3 className="text-xl font-semibold">Manage Decks</h3>
-        <DeckManager onDeckSelect={() => {}} />
+        <DeckManager />
       </div>
 
       {flashcards && flashcards.length > 0 && (
