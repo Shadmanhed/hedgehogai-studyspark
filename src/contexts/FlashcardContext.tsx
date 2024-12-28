@@ -15,7 +15,7 @@ interface FlashcardContextType {
   isLoading: boolean;
   handleDelete: (id: string) => Promise<void>;
   handleAddToDeck: (flashcardId: string, deckId: string) => Promise<void>;
-  refetchFlashcards: () => Promise<void>;
+  refetchFlashcards: () => Promise<any>; // Updated return type
 }
 
 const FlashcardContext = createContext<FlashcardContextType | undefined>(undefined);
