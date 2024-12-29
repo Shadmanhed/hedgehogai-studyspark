@@ -21,19 +21,38 @@ export const PomodoroTimer = () => {
   const [mode, setMode] = useState<"pomodoro" | "stopwatch">("pomodoro");
   const [studySessions, setStudySessions] = useState<any[]>([]);
   const { toast } = useToast();
+  const [userId, setUserId] = useState<string | null>(null);
 
   const totalTime = 25 * 60;
   const [stopwatchTime, setStopwatchTime] = useState(0);
 
   useEffect(() => {
-    fetchStudySessions();
+    // Get the current user's ID when component mounts
+    const getCurrentUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      setUserId(user?.id || null);
+      console.log("Current user:", user?.id);
+    };
+    getCurrentUser();
   }, []);
 
+  useEffect(() => {
+    if (userId) {
+      fetchStudySessions();
+    }
+  }, [userId]);
+
   const fetchStudySessions = async () => {
+    if (!userId) {
+      console.log("No user ID available");
+      return;
+    }
+
     try {
       const { data, error } = await supabase
         .from("study_sessions")
         .select("*")
+        .eq("user_id", userId)
         .order("created_at", { ascending: false });
 
       if (error) throw error;
@@ -50,14 +69,25 @@ export const PomodoroTimer = () => {
   };
 
   const saveStudySession = async (duration: number, sessionType: string) => {
+    if (!userId) {
+      console.log("No user ID available");
+      toast({
+        title: "Error",
+        description: "Please log in to save study sessions",
+        duration: 3000,
+      });
+      return;
+    }
+
     try {
       const { error } = await supabase.from("study_sessions").insert({
         duration,
         session_type: sessionType,
+        user_id: userId,
       });
 
       if (error) throw error;
-      console.log("Study session saved:", { duration, sessionType });
+      console.log("Study session saved:", { duration, sessionType, userId });
       fetchStudySessions();
       toast({
         title: "Success",
@@ -157,90 +187,99 @@ export const PomodoroTimer = () => {
 
   return (
     <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
-      <div className="flex gap-4 justify-center mb-6">
-        <Button
-          variant={mode === "pomodoro" ? "default" : "outline"}
-          onClick={() => switchMode("pomodoro")}
-          className="gap-2"
-        >
-          <Timer className="h-4 w-4" />
-          Pomodoro
-        </Button>
-        <Button
-          variant={mode === "stopwatch" ? "default" : "outline"}
-          onClick={() => switchMode("stopwatch")}
-          className="gap-2"
-        >
-          <Watch className="h-4 w-4" />
-          Stopwatch
-        </Button>
-      </div>
-
-      <div className="w-full max-w-sm mx-auto p-6 bg-white rounded-2xl shadow-lg animate-fade-up">
-        <h3 className="text-2xl font-heading font-bold mb-4 gradient-text">
-          {mode === "pomodoro" ? "Pomodoro Timer" : "Stopwatch"}
-        </h3>
-        {mode === "pomodoro" && (
-          <div className="mb-6">
-            <Progress value={progress} className="h-3" />
+      {!userId ? (
+        <div className="text-center p-4 bg-yellow-100 rounded-lg">
+          Please log in to track your study sessions
+        </div>
+      ) : (
+        // ... keep existing code (timer UI and study sessions table)
+        <>
+          <div className="flex gap-4 justify-center mb-6">
+            <Button
+              variant={mode === "pomodoro" ? "default" : "outline"}
+              onClick={() => switchMode("pomodoro")}
+              className="gap-2"
+            >
+              <Timer className="h-4 w-4" />
+              Pomodoro
+            </Button>
+            <Button
+              variant={mode === "stopwatch" ? "default" : "outline"}
+              onClick={() => switchMode("stopwatch")}
+              className="gap-2"
+            >
+              <Watch className="h-4 w-4" />
+              Stopwatch
+            </Button>
           </div>
-        )}
-        <div className="text-4xl font-bold mb-6 text-accent">
-          {mode === "pomodoro"
-            ? formatTime(timeLeft)
-            : formatTime(stopwatchTime)}
-        </div>
-        <div className="flex justify-center gap-4">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={toggleTimer}
-            className="w-12 h-12 rounded-full"
-          >
-            {isRunning ? (
-              <Pause className="h-6 w-6" />
-            ) : (
-              <Play className="h-6 w-6" />
-            )}
-          </Button>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={resetTimer}
-            className="w-12 h-12 rounded-full"
-          >
-            <RotateCcw className="h-6 w-6" />
-          </Button>
-        </div>
-      </div>
 
-      <div className="mt-8">
-        <h3 className="text-2xl font-heading font-bold mb-4">Study Sessions</h3>
-        <div className="bg-white rounded-lg shadow overflow-hidden">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Date</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Duration</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {studySessions.map((session) => (
-                <TableRow key={session.id}>
-                  <TableCell>
-                    {format(new Date(session.created_at), "PPp")}
-                  </TableCell>
-                  <TableCell className="capitalize">
-                    {session.session_type}
-                  </TableCell>
-                  <TableCell>{formatTime(session.duration)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
+          <div className="w-full max-w-sm mx-auto p-6 bg-white rounded-2xl shadow-lg animate-fade-up">
+            <h3 className="text-2xl font-heading font-bold mb-4 gradient-text">
+              {mode === "pomodoro" ? "Pomodoro Timer" : "Stopwatch"}
+            </h3>
+            {mode === "pomodoro" && (
+              <div className="mb-6">
+                <Progress value={progress} className="h-3" />
+              </div>
+            )}
+            <div className="text-4xl font-bold mb-6 text-accent">
+              {mode === "pomodoro"
+                ? formatTime(timeLeft)
+                : formatTime(stopwatchTime)}
+            </div>
+            <div className="flex justify-center gap-4">
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={toggleTimer}
+                className="w-12 h-12 rounded-full"
+              >
+                {isRunning ? (
+                  <Pause className="h-6 w-6" />
+                ) : (
+                  <Play className="h-6 w-6" />
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={resetTimer}
+                className="w-12 h-12 rounded-full"
+              >
+                <RotateCcw className="h-6 w-6" />
+              </Button>
+            </div>
+          </div>
+
+          <div className="mt-8">
+            <h3 className="text-2xl font-heading font-bold mb-4">Study Sessions</h3>
+            <div className="bg-white rounded-lg shadow overflow-hidden">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Type</TableHead>
+                    <TableHead>Duration</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {studySessions.map((session) => (
+                    <TableRow key={session.id}>
+                      <TableCell>
+                        {format(new Date(session.created_at), "PPp")}
+                      </TableCell>
+                      <TableCell className="capitalize">
+                        {session.session_type}
+                      </TableCell>
+                      <TableCell>{formatTime(session.duration)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 };
