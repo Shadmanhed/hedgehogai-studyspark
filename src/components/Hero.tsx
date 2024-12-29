@@ -1,9 +1,15 @@
 import { GraduationCap, BookOpen, Brain } from "lucide-react";
 import { Button } from "./ui/button";
 import { useNavigate } from "react-router-dom";
+import { useRef } from "react";
 
 export const Hero = () => {
   const navigate = useNavigate();
+  const featuresRef = useRef<HTMLDivElement>(null);
+
+  const handleGetStarted = () => {
+    featuresRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
   return (
     <div className="min-h-[80vh] flex flex-col items-center justify-center px-4 py-16 bg-gradient-to-b from-primary to-white">
@@ -18,13 +24,16 @@ export const Hero = () => {
         <Button
           size="lg"
           className="bg-accent hover:bg-accent/90 text-white rounded-full px-8"
-          onClick={() => navigate("/login")}
+          onClick={handleGetStarted}
         >
           Get Started
         </Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 w-full max-w-6xl mx-auto p-4">
+      <div 
+        ref={featuresRef}
+        className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-16 w-full max-w-6xl mx-auto p-4"
+      >
         <div className="feature-card animate-fade-up" style={{ animationDelay: "0.1s" }}>
           <BookOpen className="w-12 h-12 text-secondary mb-4" />
           <h3 className="text-xl font-semibold mb-2">Advanced Note Summarizer</h3>
