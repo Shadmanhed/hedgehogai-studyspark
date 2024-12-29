@@ -17,25 +17,20 @@ serve(async (req) => {
     const { fileUrl } = await req.json();
     console.log('Processing file URL:', fileUrl);
     
-    // Fetch the file content
     const fileResponse = await fetch(fileUrl);
     if (!fileResponse.ok) {
       throw new Error('Failed to fetch file content');
     }
 
-    // Get the content type from the response
     const contentType = fileResponse.headers.get('content-type');
     console.log('File content type:', contentType);
 
-    // Convert file content to text, handling different file types
     let content;
     if (contentType?.includes('application/pdf') || 
         contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
         contentType?.includes('application/vnd.ms-powerpoint')) {
-      // For binary files, we'll use the URL directly
-      content = `Please generate flashcards from this ${contentType} file: ${fileUrl}`;
+      content = `Please analyze this ${contentType} file available at: ${fileUrl} and create comprehensive flashcards that cover all key concepts and important details.`;
     } else {
-      // For text files, we can read the content directly
       content = await fileResponse.text();
     }
 
@@ -51,18 +46,23 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert at creating educational flashcards. Create exactly 5 flashcards from the provided content. 
+            content: `You are an expert at creating comprehensive educational flashcards. Your task is to:
+            1. Thoroughly analyze the content and identify ALL important concepts, definitions, and key points
+            2. Create 10-15 high-quality flashcards that cover the material comprehensively
+            3. Ensure each flashcard focuses on a single concept or idea
+            4. Write clear, concise questions for the front and detailed, informative answers for the back
+            5. Include examples where appropriate to enhance understanding
             Format your response as a valid JSON array of objects with 'front' and 'back' properties.
             Example: [{"front": "Question?", "back": "Answer"}]
-            IMPORTANT: Your response must contain ONLY the JSON array, with no additional text, markdown formatting, or code blocks.`
+            IMPORTANT: Your response must contain ONLY the JSON array, with no additional text or formatting.`
           },
           {
             role: 'user',
-            content: `Generate 5 flashcards from this content: ${content}`
+            content: `Generate comprehensive flashcards from this content: ${content}`
           }
         ],
         temperature: 0.7,
-        max_tokens: 2000,
+        max_tokens: 4000,
       }),
     });
 
@@ -75,27 +75,21 @@ serve(async (req) => {
     const data = await response.json();
     console.log('Groq API response received');
     
-    // Get the raw content from the response
     let flashcardsText = data.choices[0].message.content;
     console.log('Raw Groq API response content:', flashcardsText);
     
-    // Clean up the response
     flashcardsText = flashcardsText.trim();
-    
-    // Remove any markdown code block markers if present
     flashcardsText = flashcardsText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
     console.log('Cleaned flashcards text:', flashcardsText);
     
     try {
       const flashcards = JSON.parse(flashcardsText);
       
-      // Validate the structure
       if (!Array.isArray(flashcards)) {
         console.error('Parsed content is not an array:', flashcards);
         throw new Error('Response is not an array of flashcards');
       }
       
-      // Validate each flashcard
       const validFlashcards = flashcards.every(card => 
         card && 
         typeof card === 'object' && 
