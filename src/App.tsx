@@ -10,8 +10,8 @@ import Login from "./pages/Login";
 import Summarizer from "./pages/Summarizer";
 import AITeacherPage from "./pages/AITeacher";
 import FlashcardMakerPage from "./pages/FlashcardMaker";
-import Features from "./pages/Features";
 import HowItWorks from "./pages/HowItWorks";
+import PomodoroTimer from "./pages/PomodoroTimer";
 import { DeckFlashcards } from "./components/DeckFlashcards";
 
 const queryClient = new QueryClient();
@@ -43,7 +43,6 @@ const App = () => (
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/" element={<Index />} />
-          <Route path="/features" element={<Features />} />
           <Route path="/how-it-works" element={<HowItWorks />} />
           <Route
             path="/summarizer"
@@ -66,6 +65,14 @@ const App = () => (
             element={
               <ProtectedRoute>
                 <FlashcardMakerPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/pomodoro"
+            element={
+              <ProtectedRoute>
+                <PomodoroTimer />
               </ProtectedRoute>
             }
           />

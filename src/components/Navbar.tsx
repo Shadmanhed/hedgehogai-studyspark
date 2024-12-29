@@ -38,13 +38,6 @@ export const Navbar = () => {
       <Button 
         variant="ghost" 
         className="text-muted-foreground hover:text-accent transition-colors"
-        onClick={() => handleNavigation("/features")}
-      >
-        Features
-      </Button>
-      <Button 
-        variant="ghost" 
-        className="text-muted-foreground hover:text-accent transition-colors"
         onClick={() => handleNavigation("/how-it-works")}
       >
         How it Works
@@ -72,6 +65,13 @@ export const Navbar = () => {
             onClick={() => handleNavigation("/ai-teacher")}
           >
             AI Teacher
+          </Button>
+          <Button 
+            variant="ghost" 
+            className="text-muted-foreground hover:text-accent transition-colors"
+            onClick={() => handleNavigation("/pomodoro")}
+          >
+            Pomodoro Timer
           </Button>
         </>
       )}
