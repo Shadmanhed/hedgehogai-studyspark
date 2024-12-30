@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "./ui/button";
 import { ArrowLeft } from "lucide-react";
+import { DeletedFlashcardsProvider } from "@/contexts/DeletedFlashcardsContext";
 
 interface DeckFlashcard {
   id: string;
@@ -68,35 +69,37 @@ export const DeckFlashcards = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button
-          variant="ghost"
-          onClick={() => navigate('/flashcards')}
-          className="flex items-center gap-2"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          Back to Decks
-        </Button>
-      </div>
-
-      {flashcards && flashcards.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {flashcards.map((flashcard) => (
-            <Flashcard
-              key={flashcard.id}
-              id={flashcard.id}
-              frontContent={flashcard.front_content}
-              backContent={flashcard.back_content}
-              onDelete={handleDelete}
-              onAddToDeck={() => {}}
-              hideAddToDeck
-            />
-          ))}
+    <DeletedFlashcardsProvider>
+      <div className="space-y-6">
+        <div className="flex items-center gap-4">
+          <Button
+            variant="ghost"
+            onClick={() => navigate('/flashcards')}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Decks
+          </Button>
         </div>
-      ) : (
-        <p className="text-center text-muted-foreground">No flashcards in this deck yet.</p>
-      )}
-    </div>
+
+        {flashcards && flashcards.length > 0 ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {flashcards.map((flashcard) => (
+              <Flashcard
+                key={flashcard.id}
+                id={flashcard.id}
+                frontContent={flashcard.front_content}
+                backContent={flashcard.back_content}
+                onDelete={handleDelete}
+                onAddToDeck={() => {}}
+                hideAddToDeck
+              />
+            ))}
+          </div>
+        ) : (
+          <p className="text-center text-muted-foreground">No flashcards in this deck yet.</p>
+        )}
+      </div>
+    </DeletedFlashcardsProvider>
   );
 };
