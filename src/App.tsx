@@ -69,7 +69,7 @@ const App = () => (
             }
           />
           <Route
-            path="/pomodoro"
+            path="/timer"
             element={
               <ProtectedRoute>
                 <PomodoroTimer />
