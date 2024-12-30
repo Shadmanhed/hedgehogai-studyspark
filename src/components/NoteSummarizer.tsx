@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { FileUploadSection } from "./FileUploadSection";
 import { TextInputSection } from "./TextInputSection";
 import { Textarea } from "./ui/textarea";
+import { ScrollArea } from "./ui/scroll-area";
 
 export const NoteSummarizer = () => {
   const [summary, setSummary] = useState("");
@@ -46,12 +47,13 @@ export const NoteSummarizer = () => {
             <CardTitle className="text-2xl font-bold text-center">Summary Output</CardTitle>
           </CardHeader>
           <CardContent>
-            <Textarea
-              value={summary}
-              readOnly
-              className="min-h-[200px] bg-muted"
-              placeholder="Your summary will appear here..."
-            />
+            <ScrollArea className="h-[400px] rounded-md border p-4">
+              <div className="prose max-w-none">
+                <p className="text-lg leading-relaxed whitespace-pre-wrap">
+                  {summary}
+                </p>
+              </div>
+            </ScrollArea>
           </CardContent>
         </Card>
       )}

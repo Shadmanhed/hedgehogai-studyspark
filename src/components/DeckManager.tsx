@@ -5,6 +5,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
+import { Trash2 } from "lucide-react";
 
 export const DeckManager = () => {
   const [newDeckName, setNewDeckName] = useState("");
@@ -64,6 +65,31 @@ export const DeckManager = () => {
     }
   };
 
+  const handleDeleteDeck = async (deckId: string) => {
+    try {
+      const { error } = await supabase
+        .from('decks')
+        .delete()
+        .eq('id', deckId);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "Deck deleted successfully!",
+      });
+
+      refetchDecks();
+    } catch (error) {
+      console.error('Error deleting deck:', error);
+      toast({
+        title: "Error",
+        description: error.message || "Failed to delete deck",
+        variant: "destructive",
+      });
+    }
+  };
+
   const handleDeckClick = (deckId: string) => {
     navigate(`/flashcards/deck/${deckId}`);
   };
@@ -87,17 +113,29 @@ export const DeckManager = () => {
       {decks && decks.length > 0 && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {decks.map((deck) => (
-            <Button
-              key={deck.id}
-              variant="outline"
-              className="h-auto py-4 px-6 text-left flex flex-col items-start"
-              onClick={() => handleDeckClick(deck.id)}
-            >
-              <span className="font-semibold">{deck.name}</span>
-              <span className="text-sm text-muted-foreground">
-                Created {new Date(deck.created_at).toLocaleDateString()}
-              </span>
-            </Button>
+            <div key={deck.id} className="relative group">
+              <Button
+                variant="outline"
+                className="w-full h-auto py-4 px-6 text-left flex flex-col items-start"
+                onClick={() => handleDeckClick(deck.id)}
+              >
+                <span className="font-semibold">{deck.name}</span>
+                <span className="text-sm text-muted-foreground">
+                  Created {new Date(deck.created_at).toLocaleDateString()}
+                </span>
+              </Button>
+              <Button
+                variant="destructive"
+                size="icon"
+                className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteDeck(deck.id);
+                }}
+              >
+                <Trash2 className="h-4 w-4" />
+              </Button>
+            </div>
           ))}
         </div>
       )}
