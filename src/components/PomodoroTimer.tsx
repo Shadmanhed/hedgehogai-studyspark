@@ -64,6 +64,7 @@ export const PomodoroTimer = () => {
   };
 
   const switchMode = (newMode: "pomodoro" | "stopwatch") => {
+    // Save current session if running before switching
     if (timerState.isRunning) {
       if (timerState.mode === "pomodoro") {
         saveStudySession(totalTime - timerState.timeLeft, "pomodoro");
@@ -71,12 +72,16 @@ export const PomodoroTimer = () => {
         saveStudySession(timerState.stopwatchTime, "stopwatch");
       }
     }
+
+    // Keep the current running state when switching modes
+    const currentIsRunning = timerState.isRunning;
+    
     updateTimer({
       mode: newMode,
-      isRunning: false,
+      isRunning: currentIsRunning, // Preserve the running state
       timeLeft: newMode === "pomodoro" ? totalTime : timerState.timeLeft,
       progress: newMode === "pomodoro" ? 100 : timerState.progress,
-      stopwatchTime: newMode === "stopwatch" ? 0 : timerState.stopwatchTime,
+      stopwatchTime: newMode === "stopwatch" ? timerState.stopwatchTime : 0, // Preserve stopwatch time when switching back
     });
   };
 
