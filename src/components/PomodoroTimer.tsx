@@ -11,6 +11,7 @@ export const PomodoroTimer = () => {
   const { timerState, updateTimer, saveStudySession } = useTimer();
   const { toast } = useToast();
   const totalTime = 25 * 60;
+  const breakTime = 5 * 60;
 
   const { data: studySessions = [] } = useQuery({
     queryKey: ["study-sessions"],
@@ -30,14 +31,34 @@ export const PomodoroTimer = () => {
   });
 
   useEffect(() => {
-    if (timerState.mode === "pomodoro" && timerState.timeLeft === 0 && timerState.isRunning) {
+    if (timerState.timeLeft === 0 && timerState.isRunning) {
       updateTimer({ isRunning: false });
-      saveStudySession(totalTime, "pomodoro");
-      toast({
-        title: "Time's up!",
-        description: "Take a 5-minute break before starting your next session.",
-        duration: 5000,
-      });
+      
+      if (timerState.mode === "pomodoro") {
+        saveStudySession(totalTime, "pomodoro");
+        updateTimer({
+          mode: "break",
+          timeLeft: breakTime,
+          progress: 100,
+          isRunning: true
+        });
+        toast({
+          title: "Time's up!",
+          description: "Starting your 5-minute break.",
+          duration: 5000,
+        });
+      } else if (timerState.mode === "break") {
+        updateTimer({
+          mode: "pomodoro",
+          timeLeft: totalTime,
+          progress: 100,
+        });
+        toast({
+          title: "Break finished!",
+          description: "Ready to start your next Pomodoro session?",
+          duration: 5000,
+        });
+      }
     }
   }, [timerState.timeLeft, timerState.isRunning, timerState.mode]);
 
@@ -50,38 +71,36 @@ export const PomodoroTimer = () => {
     if (timerState.isRunning) {
       if (timerState.mode === "pomodoro") {
         saveStudySession(totalTime - timerState.timeLeft, "pomodoro");
-      } else {
+      } else if (timerState.mode === "stopwatch") {
         saveStudySession(timerState.stopwatchTime, "stopwatch");
       }
     }
     updateTimer({
       isRunning: false,
-      timeLeft: timerState.mode === "pomodoro" ? totalTime : timerState.timeLeft,
-      progress: timerState.mode === "pomodoro" ? 100 : timerState.progress,
+      timeLeft: timerState.mode === "pomodoro" ? totalTime : timerState.mode === "break" ? breakTime : timerState.timeLeft,
+      progress: timerState.mode === "pomodoro" || timerState.mode === "break" ? 100 : timerState.progress,
       stopwatchTime: timerState.mode === "stopwatch" ? 0 : timerState.stopwatchTime,
     });
     console.log("Timer reset");
   };
 
   const switchMode = (newMode: "pomodoro" | "stopwatch") => {
-    // Save current session if running before switching
     if (timerState.isRunning) {
       if (timerState.mode === "pomodoro") {
         saveStudySession(totalTime - timerState.timeLeft, "pomodoro");
-      } else {
+      } else if (timerState.mode === "stopwatch") {
         saveStudySession(timerState.stopwatchTime, "stopwatch");
       }
     }
 
-    // Keep the current running state when switching modes
     const currentIsRunning = timerState.isRunning;
     
     updateTimer({
       mode: newMode,
-      isRunning: currentIsRunning, // Preserve the running state
+      isRunning: currentIsRunning,
       timeLeft: newMode === "pomodoro" ? totalTime : timerState.timeLeft,
       progress: newMode === "pomodoro" ? 100 : timerState.progress,
-      stopwatchTime: newMode === "stopwatch" ? timerState.stopwatchTime : 0, // Preserve stopwatch time when switching back
+      stopwatchTime: newMode === "stopwatch" ? timerState.stopwatchTime : 0,
     });
   };
 
@@ -89,7 +108,8 @@ export const PomodoroTimer = () => {
     <div className="w-full max-w-4xl mx-auto p-6 space-y-8">
       <div className="w-full max-w-sm mx-auto p-6 bg-white rounded-2xl shadow-lg animate-fade-up">
         <h3 className="text-2xl font-heading font-bold mb-4 gradient-text">
-          {timerState.mode === "pomodoro" ? "Pomodoro Timer" : "Stopwatch"}
+          {timerState.mode === "pomodoro" ? "Pomodoro Timer" : 
+           timerState.mode === "break" ? "Break Time" : "Stopwatch"}
         </h3>
         
         <TimerDisplay

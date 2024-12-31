@@ -2,7 +2,7 @@ import { formatTime } from "@/lib/utils";
 import { Progress } from "../ui/progress";
 
 interface TimerDisplayProps {
-  mode: "pomodoro" | "stopwatch";
+  mode: "pomodoro" | "stopwatch" | "break";
   timeLeft: number;
   stopwatchTime: number;
   progress: number;
@@ -16,13 +16,13 @@ export const TimerDisplay = ({
 }: TimerDisplayProps) => {
   return (
     <div className="text-center">
-      {mode === "pomodoro" && (
+      {(mode === "pomodoro" || mode === "break") && (
         <div className="mb-6">
           <Progress value={progress} className="h-3" />
         </div>
       )}
       <div className="text-4xl font-bold mb-6 text-accent">
-        {mode === "pomodoro" ? formatTime(timeLeft) : formatTime(stopwatchTime)}
+        {mode === "stopwatch" ? formatTime(stopwatchTime) : formatTime(timeLeft)}
       </div>
     </div>
   );

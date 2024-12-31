@@ -2,7 +2,7 @@ import { Button } from "../ui/button";
 import { Timer, Watch, Pause, Play, RotateCcw } from "lucide-react";
 
 interface TimerControlsProps {
-  mode: "pomodoro" | "stopwatch";
+  mode: "pomodoro" | "stopwatch" | "break";
   isRunning: boolean;
   onModeSwitch: (mode: "pomodoro" | "stopwatch") => void;
   onToggle: () => void;
@@ -18,24 +18,26 @@ export const TimerControls = ({
 }: TimerControlsProps) => {
   return (
     <>
-      <div className="flex gap-4 justify-center mb-6">
-        <Button
-          variant={mode === "pomodoro" ? "default" : "outline"}
-          onClick={() => onModeSwitch("pomodoro")}
-          className="gap-2"
-        >
-          <Timer className="h-4 w-4" />
-          Pomodoro
-        </Button>
-        <Button
-          variant={mode === "stopwatch" ? "default" : "outline"}
-          onClick={() => onModeSwitch("stopwatch")}
-          className="gap-2"
-        >
-          <Watch className="h-4 w-4" />
-          Stopwatch
-        </Button>
-      </div>
+      {mode !== "break" && (
+        <div className="flex gap-4 justify-center mb-6">
+          <Button
+            variant={mode === "pomodoro" ? "default" : "outline"}
+            onClick={() => onModeSwitch("pomodoro")}
+            className="gap-2"
+          >
+            <Timer className="h-4 w-4" />
+            Pomodoro
+          </Button>
+          <Button
+            variant={mode === "stopwatch" ? "default" : "outline"}
+            onClick={() => onModeSwitch("stopwatch")}
+            className="gap-2"
+          >
+            <Watch className="h-4 w-4" />
+            Stopwatch
+          </Button>
+        </div>
+      )}
       <div className="flex justify-center gap-4">
         <Button
           variant="outline"

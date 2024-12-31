@@ -4,13 +4,14 @@ interface TimerState {
   timeLeft: number;
   isRunning: boolean;
   progress: number;
-  mode: "pomodoro" | "stopwatch";
+  mode: "pomodoro" | "stopwatch" | "break";
   stopwatchTime: number;
   lastUpdated: number;
 }
 
 const TIMER_KEY = "timer-state";
 const TOTAL_TIME = 25 * 60;
+const BREAK_TIME = 5 * 60;
 
 const getInitialState = (): TimerState => ({
   timeLeft: TOTAL_TIME,
@@ -33,9 +34,9 @@ export const useTimerState = () => {
       const state: TimerState = JSON.parse(stored);
       if (state.isRunning) {
         const elapsed = Math.floor((Date.now() - state.lastUpdated) / 1000);
-        if (state.mode === "pomodoro") {
+        if (state.mode === "pomodoro" || state.mode === "break") {
           state.timeLeft = Math.max(0, state.timeLeft - elapsed);
-          state.progress = (state.timeLeft / TOTAL_TIME) * 100;
+          state.progress = (state.timeLeft / (state.mode === "pomodoro" ? TOTAL_TIME : BREAK_TIME)) * 100;
         } else {
           state.stopwatchTime += elapsed;
         }
