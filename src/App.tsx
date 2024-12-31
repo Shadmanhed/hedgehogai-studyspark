@@ -13,6 +13,7 @@ import FlashcardMakerPage from "./pages/FlashcardMaker";
 import HowItWorks from "./pages/HowItWorks";
 import PomodoroTimer from "./pages/PomodoroTimer";
 import { DeckFlashcards } from "./components/DeckFlashcards";
+import { DeletedFlashcardsProvider } from "@/contexts/DeletedFlashcardsContext";
 
 const queryClient = new QueryClient();
 
@@ -37,55 +38,58 @@ const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/" element={<Index />} />
-          <Route path="/how-it-works" element={<HowItWorks />} />
-          <Route
-            path="/summarizer"
-            element={
-              <ProtectedRoute>
-                <Summarizer />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/ai-teacher"
-            element={
-              <ProtectedRoute>
-                <AITeacherPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/flashcards"
-            element={
-              <ProtectedRoute>
-                <FlashcardMakerPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/pomodoro"
-            element={
-              <ProtectedRoute>
-                <PomodoroTimer />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/flashcards/deck/:deckId"
-            element={
-              <ProtectedRoute>
-                <DeckFlashcards />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
-      </BrowserRouter>
+      <DeletedFlashcardsProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/login" element={<Login />} />
+            <Route path="/" element={<Index />} />
+            <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route
+              path="/summarizer"
+              element={
+                <ProtectedRoute>
+                  <Summarizer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/ai-teacher"
+              element={
+                <ProtectedRoute>
+                  <AITeacherPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/flashcards"
+              element={
+                <ProtectedRoute>
+                  <FlashcardMakerPage />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/pomodoro"
+              element={
+                <ProtectedRoute>
+                  <PomodoroTimer />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/flashcards/deck/:deckId"
+              element={
+                <ProtectedRoute>
+                  <DeckFlashcards />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </BrowserRouter>
+      </DeletedFlashcardsProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
