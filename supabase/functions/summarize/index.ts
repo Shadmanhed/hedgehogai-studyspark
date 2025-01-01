@@ -41,7 +41,18 @@ serve(async (req) => {
       if (contentType?.includes('application/pdf') || 
           contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
           contentType?.includes('application/vnd.ms-powerpoint')) {
-        contentToSummarize = `Please analyze and summarize this ${contentType} document available at: ${fileUrl}. Focus on extracting and organizing the main academic concepts and key points.`;
+        contentToSummarize = `Please analyze this ${contentType} document available at: ${fileUrl}. Your task is to:
+1. Thoroughly examine EVERY slide or page
+2. Extract ALL information, including details from:
+   - Main text and bullet points
+   - Headers and subheaders
+   - Notes and annotations
+   - Diagrams and image descriptions
+   - Footer information if relevant
+3. Maintain the original structure and hierarchy of information
+4. Include numerical data, dates, and specific examples
+5. Preserve technical terms and definitions exactly as presented
+Do not skip any content, no matter how minor it might seem.`;
       } else {
         contentToSummarize = await fileResponse.text();
       }
@@ -68,21 +79,22 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert academic summarizer. Your task is to:
-            1. Analyze the provided content thoroughly
-            2. Identify and extract the main academic concepts and key points
-            3. Create a well-structured, comprehensive summary
-            4. Maintain academic language and terminology
-            5. Ensure the summary is clear and concise while preserving important details
-            6. Use bullet points or numbered lists where appropriate for better organization`
+            content: `You are an expert academic summarizer with a focus on complete detail retention. Your task is to:
+1. Create an exhaustive summary that captures EVERY piece of information
+2. Maintain all specific details, examples, and technical terms
+3. Preserve the original structure and hierarchy of information
+4. Include ALL numerical data, dates, and specific examples
+5. Use bullet points or numbered lists to organize information clearly
+6. Never skip or summarize away any detail, no matter how minor
+Remember: The goal is to create a comprehensive summary that could be used to reconstruct the original content.`
           },
           {
             role: 'user',
             content: `Please provide a comprehensive academic summary of the following content: ${contentToSummarize}`
           }
         ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        temperature: 0.3, // Lower temperature for more precise output
+        max_tokens: 4000,
       }),
     });
 
