@@ -6,7 +6,7 @@ import { useToast } from "@/components/ui/use-toast";
 
 export const Auth = () => {
   const { toast } = useToast();
-  const redirectTo = `${window.location.origin}/`;
+  const redirectTo = `${window.location.origin}/reset-password`;
 
   useEffect(() => {
     // Check if there's a hash in the URL (indicates password reset)

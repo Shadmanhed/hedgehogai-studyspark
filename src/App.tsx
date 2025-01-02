@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import ResetPassword from "./pages/ResetPassword";
 import Summarizer from "./pages/Summarizer";
 import AITeacherPage from "./pages/AITeacher";
 import FlashcardMakerPage from "./pages/FlashcardMaker";
@@ -44,6 +45,7 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+            <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/" element={<Index />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
             <Route
