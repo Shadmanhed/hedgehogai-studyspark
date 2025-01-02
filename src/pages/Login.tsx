@@ -13,7 +13,7 @@ const Login = () => {
     console.log("Checking auth state...");
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event: AuthChangeEvent, session: Session) => {
       console.log("Auth state changed:", event, session);
-      if (session) {
+      if (session && !window.location.hash.includes('type=recovery')) {
         console.log("User is authenticated, redirecting to home");
         navigate("/");
       }

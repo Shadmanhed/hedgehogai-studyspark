@@ -6,7 +6,6 @@ import { useToast } from "@/components/ui/use-toast";
 
 export const Auth = () => {
   const { toast } = useToast();
-  // Get the current URL's origin (e.g., http://localhost:5173 or https://your-domain.com)
   const redirectTo = `${window.location.origin}/`;
 
   useEffect(() => {
