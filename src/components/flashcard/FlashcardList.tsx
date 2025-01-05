@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../ui/select";
+import { Checkbox } from "../ui/checkbox";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -61,7 +62,8 @@ export const FlashcardList = () => {
     }
   };
 
-  const toggleCardSelection = (cardId: string) => {
+  const toggleCardSelection = (cardId: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event from bubbling up to the card
     setSelectedCards(prev => 
       prev.includes(cardId) 
         ? prev.filter(id => id !== cardId)
@@ -112,8 +114,20 @@ export const FlashcardList = () => {
           <div 
             key={flashcard.id} 
             className={`relative ${selectedCards.includes(flashcard.id) ? 'ring-2 ring-primary rounded-lg' : ''}`}
-            onClick={() => toggleCardSelection(flashcard.id)}
           >
+            <div className="absolute top-2 left-2 z-10">
+              <Checkbox
+                checked={selectedCards.includes(flashcard.id)}
+                onCheckedChange={(checked) => {
+                  if (checked) {
+                    setSelectedCards(prev => [...prev, flashcard.id]);
+                  } else {
+                    setSelectedCards(prev => prev.filter(id => id !== flashcard.id));
+                  }
+                }}
+                className="bg-white border-2 h-5 w-5"
+              />
+            </div>
             <Flashcard
               id={flashcard.id}
               frontContent={flashcard.front_content}
