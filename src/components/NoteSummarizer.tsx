@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { FileUploadSection } from "./FileUploadSection";
 import { TextInputSection } from "./TextInputSection";
 import { ScrollArea } from "./ui/scroll-area";
+import { Separator } from "./ui/separator";
 
 export const NoteSummarizer = () => {
   const [summary, setSummary] = useState("");
@@ -48,9 +49,21 @@ export const NoteSummarizer = () => {
           <CardContent>
             <ScrollArea className="h-[400px] rounded-md border p-6 bg-white/50 backdrop-blur-sm">
               <div className="prose prose-lg max-w-none">
-                <p className="text-lg leading-relaxed whitespace-pre-wrap">
-                  {summary}
-                </p>
+                {summary.split('\n\n').map((paragraph, index) => (
+                  <div key={index} className="mb-4">
+                    {paragraph.startsWith('•') ? (
+                      <ul className="list-disc pl-4">
+                        {paragraph.split('\n').map((item, i) => (
+                          <li key={i} className="text-lg leading-relaxed">
+                            {item.replace('•', '').trim()}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-lg leading-relaxed">{paragraph}</p>
+                    )}
+                  </div>
+                ))}
               </div>
             </ScrollArea>
           </CardContent>

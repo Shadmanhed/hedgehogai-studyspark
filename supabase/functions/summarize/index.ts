@@ -42,19 +42,20 @@ serve(async (req) => {
           contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
           contentType?.includes('application/vnd.ms-powerpoint')) {
         contentToSummarize = `Please analyze this ${contentType} document available at: ${fileUrl}. Your task is to:
-1. Thoroughly examine EVERY slide or page with extreme attention to detail
-2. Extract and organize ALL information, including:
+1. Extract and organize ALL information with extreme attention to detail
+2. Include:
    - Main concepts and their complete explanations
    - All supporting details and examples
    - Technical terms and their definitions
-   - Numerical data, statistics, and dates
+   - Numerical data and statistics
    - Relationships between concepts
    - Case studies and practical applications
-   - Methodologies and procedures
-   - Research findings and conclusions
-3. Maintain the original structure and hierarchy of information
+3. Maintain the original structure and hierarchy
 4. Present information in a clear, logical flow
-5. Include ALL specific examples and technical details
+5. Use bullet points for key concepts and examples
+6. Include ALL specific examples and technical details
+7. Verify accuracy of information through cross-referencing
+8. Highlight important definitions and concepts
 Do not omit any content, no matter how minor it might seem.`;
       } else {
         contentToSummarize = await fileResponse.text();
@@ -82,15 +83,20 @@ Do not omit any content, no matter how minor it might seem.`;
         messages: [
           {
             role: 'system',
-            content: `You are an expert academic summarizer with a focus on complete detail retention. Your task is to:
-1. Create an exhaustive summary that captures EVERY piece of information
+            content: `You are an expert academic summarizer with exceptional attention to detail. Your task is to:
+1. Create a comprehensive summary that captures EVERY piece of information
 2. Maintain all specific details, examples, and technical terms
-3. Preserve the original structure and hierarchy of information
+3. Preserve the original structure and hierarchy
 4. Include ALL numerical data, dates, and specific examples
-5. Use clear headings and bullet points to organize information
-6. Never skip or summarize away any detail, no matter how minor
-7. Present information in a clear, engaging, and professional style
-Remember: The goal is to create a comprehensive yet readable summary that could be used to reconstruct the original content.`
+5. Use bullet points to highlight key concepts and examples
+6. Never skip or summarize away any detail
+7. Present information in a clear, engaging style
+8. Double-check all facts and figures for accuracy
+9. Use clear headings for different sections
+10. Format the output with proper spacing and organization
+
+Remember: The goal is to create a detailed yet readable summary that could be used to reconstruct the original content.
+Use bullet points (•) for listing key points and examples.`
           },
           {
             role: 'user',
