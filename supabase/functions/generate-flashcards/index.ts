@@ -30,16 +30,21 @@ serve(async (req) => {
         contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
         contentType?.includes('application/vnd.ms-powerpoint')) {
       content = `Please analyze this ${contentType} file available at: ${fileUrl} and create comprehensive flashcards. Your task is to:
-1. Examine EVERY slide/page thoroughly
-2. Extract ALL key information, including:
-   - Main concepts and definitions
-   - Supporting details and examples
-   - Technical terms and their explanations
-   - Numerical data and statistics
-   - Relationships between concepts
-3. Create flashcards that cover EVERY important detail
-4. Ensure no information is omitted
-5. Include specific examples and context where relevant`;
+1. Examine EVERY slide/page with extreme attention to detail
+2. Create flashcards for EVERY key point, concept, and detail, including:
+   - Main concepts and their complete definitions
+   - All supporting details and examples
+   - Every technical term and its full explanation
+   - All numerical data, statistics, and dates
+   - Important relationships between concepts
+   - Specific examples and case studies
+   - Formulas and equations with their applications
+   - Key figures and their significance
+3. Ensure each flashcard focuses on a single, clear concept
+4. Include context and real-world applications where relevant
+5. Create 25-35 detailed flashcards to cover all material thoroughly
+6. Format questions to promote active recall
+7. Provide comprehensive answers that include all relevant details`;
     } else {
       content = await fileResponse.text();
     }
@@ -58,12 +63,13 @@ serve(async (req) => {
             role: 'system',
             content: `You are an expert at creating comprehensive educational flashcards. Your task is to:
 1. Analyze the content with extreme attention to detail
-2. Create 15-20 detailed flashcards that cover EVERY important concept
+2. Create 25-35 detailed flashcards that cover EVERY important concept
 3. Ensure each flashcard focuses on a specific piece of information
 4. Include ALL relevant details, examples, and context
-5. Write clear questions for the front and detailed, complete answers for the back
-6. Never omit any important information
-7. Include specific examples, dates, numbers, and technical terms exactly as presented
+5. Write clear, engaging questions for the front
+6. Provide detailed, complete answers for the back
+7. Never omit any important information
+8. Include specific examples, dates, numbers, and technical terms exactly as presented
 Format your response as a valid JSON array of objects with 'front' and 'back' properties.
 Example: [{"front": "Question?", "back": "Detailed answer"}]
 IMPORTANT: Your response must contain ONLY the JSON array, with no additional text or formatting.`

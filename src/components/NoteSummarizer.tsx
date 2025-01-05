@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { FileUploadSection } from "./FileUploadSection";
 import { TextInputSection } from "./TextInputSection";
-import { Textarea } from "./ui/textarea";
 import { ScrollArea } from "./ui/scroll-area";
 
 export const NoteSummarizer = () => {
@@ -14,12 +13,12 @@ export const NoteSummarizer = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <Card className="w-full max-w-3xl mx-auto">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold text-center">Upload or Enter Text</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center gradient-text">Upload or Enter Text</CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-6">
           <FileUploadSection 
             onSummaryGenerated={handleSummaryGenerated}
             setIsLoading={setIsLoading}
@@ -44,11 +43,11 @@ export const NoteSummarizer = () => {
       {summary && (
         <Card className="w-full max-w-3xl mx-auto animate-fade-up">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-center">Summary Output</CardTitle>
+            <CardTitle className="text-2xl font-bold text-center gradient-text">Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[400px] rounded-md border p-4">
-              <div className="prose max-w-none">
+            <ScrollArea className="h-[400px] rounded-md border p-6 bg-white/50 backdrop-blur-sm">
+              <div className="prose prose-lg max-w-none">
                 <p className="text-lg leading-relaxed whitespace-pre-wrap">
                   {summary}
                 </p>

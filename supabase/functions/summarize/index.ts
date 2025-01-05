@@ -42,17 +42,20 @@ serve(async (req) => {
           contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
           contentType?.includes('application/vnd.ms-powerpoint')) {
         contentToSummarize = `Please analyze this ${contentType} document available at: ${fileUrl}. Your task is to:
-1. Thoroughly examine EVERY slide or page
-2. Extract ALL information, including details from:
-   - Main text and bullet points
-   - Headers and subheaders
-   - Notes and annotations
-   - Diagrams and image descriptions
-   - Footer information if relevant
+1. Thoroughly examine EVERY slide or page with extreme attention to detail
+2. Extract and organize ALL information, including:
+   - Main concepts and their complete explanations
+   - All supporting details and examples
+   - Technical terms and their definitions
+   - Numerical data, statistics, and dates
+   - Relationships between concepts
+   - Case studies and practical applications
+   - Methodologies and procedures
+   - Research findings and conclusions
 3. Maintain the original structure and hierarchy of information
-4. Include numerical data, dates, and specific examples
-5. Preserve technical terms and definitions exactly as presented
-Do not skip any content, no matter how minor it might seem.`;
+4. Present information in a clear, logical flow
+5. Include ALL specific examples and technical details
+Do not omit any content, no matter how minor it might seem.`;
       } else {
         contentToSummarize = await fileResponse.text();
       }
@@ -84,16 +87,17 @@ Do not skip any content, no matter how minor it might seem.`;
 2. Maintain all specific details, examples, and technical terms
 3. Preserve the original structure and hierarchy of information
 4. Include ALL numerical data, dates, and specific examples
-5. Use bullet points or numbered lists to organize information clearly
+5. Use clear headings and bullet points to organize information
 6. Never skip or summarize away any detail, no matter how minor
-Remember: The goal is to create a comprehensive summary that could be used to reconstruct the original content.`
+7. Present information in a clear, engaging, and professional style
+Remember: The goal is to create a comprehensive yet readable summary that could be used to reconstruct the original content.`
           },
           {
             role: 'user',
             content: `Please provide a comprehensive academic summary of the following content: ${contentToSummarize}`
           }
         ],
-        temperature: 0.3, // Lower temperature for more precise output
+        temperature: 0.3,
         max_tokens: 4000,
       }),
     });
