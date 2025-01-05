@@ -1,6 +1,6 @@
 import { Card } from "./ui/card";
 import { Button } from "./ui/button";
-import { Trash2, RotateCcw } from "lucide-react";
+import { Trash2, RotateCcw, FolderPlus } from "lucide-react";
 import { useState } from "react";
 import {
   Select,
@@ -12,6 +12,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useDeletedFlashcards } from "@/contexts/DeletedFlashcardsContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface FlashcardProps {
   id: string;
@@ -33,7 +34,9 @@ export const Flashcard = ({
   isDeleted = false
 }: FlashcardProps) => {
   const [showBack, setShowBack] = useState(false);
+  const [isSelectOpen, setIsSelectOpen] = useState(false);
   const { restoreFlashcard } = useDeletedFlashcards();
+  const { toast } = useToast();
 
   const { data: decks } = useQuery({
     queryKey: ['decks'],
@@ -57,11 +60,19 @@ export const Flashcard = ({
     });
   };
 
+  const handleAddToDeck = (deckId: string) => {
+    onAddToDeck(id, deckId);
+    toast({
+      title: "Success",
+      description: "Flashcard added to deck!",
+    });
+  };
+
   return (
     <div className="relative group">
       <Card 
-        className="p-4 cursor-pointer hover:shadow-lg transition-shadow"
-        onClick={() => setShowBack(!showBack)}
+        className={`p-4 cursor-pointer hover:shadow-lg transition-shadow ${isSelectOpen ? 'ring-2 ring-primary' : ''}`}
+        onClick={() => !isSelectOpen && setShowBack(!showBack)}
       >
         <div className="min-h-[150px] flex items-center justify-center text-center">
           {showBack ? (
@@ -100,16 +111,28 @@ export const Flashcard = ({
             </Button>
             {!hideAddToDeck && (
               <Select
+                onOpenChange={setIsSelectOpen}
                 onValueChange={(deckId) => {
-                  onAddToDeck(id, deckId);
+                  handleAddToDeck(deckId);
+                  setIsSelectOpen(false);
                 }}
               >
-                <SelectTrigger className="w-[140px] bg-white" onClick={(e) => e.stopPropagation()}>
-                  <SelectValue placeholder="Add to deck" />
+                <SelectTrigger 
+                  className="w-[140px] bg-white hover:bg-gray-50 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center gap-2">
+                    <FolderPlus className="h-4 w-4" />
+                    <SelectValue placeholder="Add to deck" />
+                  </div>
                 </SelectTrigger>
                 <SelectContent>
                   {decks?.map((deck) => (
-                    <SelectItem key={deck.id} value={deck.id}>
+                    <SelectItem 
+                      key={deck.id} 
+                      value={deck.id}
+                      className="cursor-pointer hover:bg-gray-100"
+                    >
                       {deck.name}
                     </SelectItem>
                   ))}
