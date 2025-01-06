@@ -15,7 +15,7 @@ interface FlashcardContextType {
   isLoading: boolean;
   handleDelete: (id: string) => Promise<void>;
   handleAddToDeck: (flashcardId: string, deckId: string) => Promise<void>;
-  refetchFlashcards: () => Promise<any>; // Updated return type
+  refetchFlashcards: () => Promise<any>;
 }
 
 const FlashcardContext = createContext<FlashcardContextType | undefined>(undefined);
@@ -27,9 +27,16 @@ export const FlashcardProvider = ({ children }: { children: ReactNode }) => {
     queryKey: ['flashcards'],
     queryFn: async () => {
       console.log('Fetching flashcards...');
+      const { data: deckFlashcards } = await supabase
+        .from('deck_flashcards')
+        .select('flashcard_id');
+      
+      const deckFlashcardIds = deckFlashcards?.map(df => df.flashcard_id) || [];
+      
       const { data, error } = await supabase
         .from('flashcards')
         .select('*')
+        .not('id', 'in', `(${deckFlashcardIds.join(',')})`)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
@@ -77,6 +84,9 @@ export const FlashcardProvider = ({ children }: { children: ReactNode }) => {
         title: "Success",
         description: "Flashcard added to deck successfully!",
       });
+      
+      // Refetch flashcards to update the main list
+      refetchFlashcards();
     } catch (error) {
       console.error('Error adding flashcard to deck:', error);
       toast({

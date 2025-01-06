@@ -16,7 +16,7 @@ import { useToast } from "@/hooks/use-toast";
 import { FolderPlus, Trash2 } from "lucide-react";
 
 export const FlashcardList = () => {
-  const { flashcards, handleDelete, handleAddToDeck } = useFlashcards();
+  const { flashcards, handleDelete, handleAddToDeck, refetchFlashcards } = useFlashcards();
   const [selectedCards, setSelectedCards] = useState<string[]>([]);
   const { toast } = useToast();
 
@@ -72,7 +72,10 @@ export const FlashcardList = () => {
         description: `Added ${selectedCards.length} flashcards to deck!`,
       });
       
+      // Clear selected cards and refresh the flashcards list
       setSelectedCards([]);
+      refetchFlashcards();
+      
     } catch (error) {
       toast({
         title: "Error",
