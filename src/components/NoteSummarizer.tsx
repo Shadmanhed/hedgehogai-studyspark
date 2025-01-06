@@ -3,11 +3,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
 import { FileUploadSection } from "./FileUploadSection";
 import { TextInputSection } from "./TextInputSection";
 import { ScrollArea } from "./ui/scroll-area";
-import { Separator } from "./ui/separator";
 
 export const NoteSummarizer = () => {
   const [summary, setSummary] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [text, setText] = useState("");
 
   const handleSummaryGenerated = (generatedSummary: string) => {
     setSummary(generatedSummary);
@@ -33,8 +33,8 @@ export const NoteSummarizer = () => {
             </div>
           </div>
           <TextInputSection 
-            text=""
-            setText={() => {}}
+            text={text}
+            setText={setText}
             isLoading={isLoading}
             onSummaryGenerated={handleSummaryGenerated}
           />
