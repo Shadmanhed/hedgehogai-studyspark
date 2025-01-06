@@ -42,17 +42,17 @@ export const NoteSummarizer = () => {
       </Card>
 
       {summary && (
-        <Card className="w-full max-w-3xl mx-auto animate-fade-up">
+        <Card className="w-full max-w-4xl mx-auto animate-fade-up">
           <CardHeader>
             <CardTitle className="text-2xl font-bold text-center gradient-text">Summary</CardTitle>
           </CardHeader>
           <CardContent>
-            <ScrollArea className="h-[400px] rounded-md border p-6 bg-white/50 backdrop-blur-sm">
+            <ScrollArea className="h-[600px] rounded-md border p-8 bg-white/50 backdrop-blur-sm">
               <div className="prose prose-lg max-w-none">
                 {summary.split('\n\n').map((paragraph, index) => (
-                  <div key={index} className="mb-4">
+                  <div key={index} className="mb-6">
                     {paragraph.startsWith('•') ? (
-                      <ul className="list-disc pl-4">
+                      <ul className="space-y-3 list-none pl-4">
                         {paragraph.split('\n').map((item, i) => (
                           <li key={i} className="text-lg leading-relaxed">
                             {item.replace('•', '').trim()}

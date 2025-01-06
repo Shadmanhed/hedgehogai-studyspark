@@ -13,7 +13,7 @@ import { Checkbox } from "../ui/checkbox";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { FolderPlus } from "lucide-react";
+import { FolderPlus, Trash2 } from "lucide-react";
 
 export const FlashcardList = () => {
   const { flashcards, handleDelete, handleAddToDeck } = useFlashcards();
@@ -41,11 +41,31 @@ export const FlashcardList = () => {
     }
   };
 
-  const handleAddSelectedToDeck = async (deckId: string) => {
+  const handleDeleteSelected = async () => {
     try {
       for (const cardId of selectedCards) {
-        await handleAddToDeck(cardId, deckId);
+        await handleDelete(cardId);
       }
+      
+      toast({
+        title: "Success",
+        description: `Deleted ${selectedCards.length} flashcards!`,
+      });
+      
+      setSelectedCards([]);
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete flashcards",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleAddSelectedToDeck = async (deckId: string) => {
+    try {
+      const promises = selectedCards.map(cardId => handleAddToDeck(cardId, deckId));
+      await Promise.all(promises);
       
       toast({
         title: "Success",
@@ -63,7 +83,7 @@ export const FlashcardList = () => {
   };
 
   const toggleCardSelection = (cardId: string, e: React.MouseEvent) => {
-    e.stopPropagation(); // Prevent event from bubbling up to the card
+    e.stopPropagation();
     setSelectedCards(prev => 
       prev.includes(cardId) 
         ? prev.filter(id => id !== cardId)
@@ -86,25 +106,35 @@ export const FlashcardList = () => {
             {selectedCards.length === flashcards.length ? "Deselect All" : "Select All"}
           </Button>
           {selectedCards.length > 0 && (
-            <Select onValueChange={handleAddSelectedToDeck}>
-              <SelectTrigger className="w-[200px]">
-                <div className="flex items-center gap-2">
-                  <FolderPlus className="h-4 w-4" />
-                  <SelectValue placeholder="Add selected to deck" />
-                </div>
-              </SelectTrigger>
-              <SelectContent>
-                {decks?.map((deck) => (
-                  <SelectItem 
-                    key={deck.id} 
-                    value={deck.id}
-                    className="cursor-pointer hover:bg-gray-100"
-                  >
-                    {deck.name}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <>
+              <Button
+                variant="destructive"
+                onClick={handleDeleteSelected}
+                className="flex items-center gap-2"
+              >
+                <Trash2 className="h-4 w-4" />
+                Delete Selected
+              </Button>
+              <Select onValueChange={handleAddSelectedToDeck}>
+                <SelectTrigger className="w-[200px]">
+                  <div className="flex items-center gap-2">
+                    <FolderPlus className="h-4 w-4" />
+                    <SelectValue placeholder="Add selected to deck" />
+                  </div>
+                </SelectTrigger>
+                <SelectContent>
+                  {decks?.map((deck) => (
+                    <SelectItem 
+                      key={deck.id} 
+                      value={deck.id}
+                      className="cursor-pointer hover:bg-gray-100"
+                    >
+                      {deck.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </>
           )}
         </div>
       </div>

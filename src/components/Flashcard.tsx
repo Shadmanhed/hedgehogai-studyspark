@@ -74,9 +74,9 @@ export const Flashcard = ({
         className={`p-4 cursor-pointer hover:shadow-lg transition-shadow ${isSelectOpen ? 'ring-2 ring-primary' : ''}`}
         onClick={() => !isSelectOpen && setShowBack(!showBack)}
       >
-        <div className="min-h-[150px] flex items-center justify-center text-center">
+        <div className="min-h-[200px] flex items-center justify-center text-center p-4">
           {showBack ? (
-            <p>{backContent}</p>
+            <p className="mb-12">{backContent}</p>
           ) : (
             <p>{frontContent}</p>
           )}
