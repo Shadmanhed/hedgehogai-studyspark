@@ -36,6 +36,33 @@ export type Database = {
         }
         Relationships: []
       }
+      archived_flashcards: {
+        Row: {
+          archived_at: string
+          back_content: string
+          created_at: string
+          front_content: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          archived_at?: string
+          back_content: string
+          created_at?: string
+          front_content: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          archived_at?: string
+          back_content?: string
+          created_at?: string
+          front_content?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       deck_flashcards: {
         Row: {
           added_at: string
