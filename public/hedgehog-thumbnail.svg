@@ -2,26 +2,17 @@
   <!-- Background Circle -->
   <circle cx="256" cy="256" r="256" fill="#F5E6D3"/>
   
-  <!-- Hedgehog Body -->
-  <ellipse cx="256" cy="286" rx="120" ry="100" fill="#A17C6B"/>
+  <!-- Brain Shape -->
+  <path d="M256 136C176 136 112 200 112 280C112 360 176 424 256 424C336 424 400 360 400 280C400 200 336 136 256 136Z" fill="#A17C6B"/>
   
-  <!-- Spikes -->
-  <path d="M136 286 L256 186 L376 286" fill="#8E6C88" stroke="#8E6C88" stroke-width="4"/>
-  <path d="M136 286 L256 236 L376 286" fill="#A17C6B" stroke="#A17C6B" stroke-width="4"/>
+  <!-- Brain Details -->
+  <path d="M256 166C196 166 146 216 146 276C146 336 196 386 256 386C316 386 366 336 366 276C366 216 316 166 256 166Z" fill="#8E6C88"/>
   
-  <!-- Face -->
-  <circle cx="226" cy="286" r="10" fill="#2D2D2D"/> <!-- Left Eye -->
-  <circle cx="286" cy="286" r="10" fill="#2D2D2D"/> <!-- Right Eye -->
-  <ellipse cx="256" cy="306" rx="15" ry="10" fill="#2D2D2D"/> <!-- Nose -->
+  <!-- Neural Network Lines -->
+  <path d="M196 246L256 306M256 306L316 246" stroke="#F5E6D3" stroke-width="4"/>
+  <path d="M196 306L256 246M256 246L316 306" stroke="#F5E6D3" stroke-width="4"/>
   
-  <!-- Binary/Circuit Elements -->
-  <text x="156" y="386" fill="#8E6C88" font-family="monospace" font-size="24">10</text>
-  <text x="356" y="386" fill="#8E6C88" font-family="monospace" font-size="24">01</text>
-  
-  <!-- Graduation Cap -->
-  <path d="M206 166 L306 166 L256 136 Z" fill="#2D2D2D"/>
-  <rect x="241" y="136" width="30" height="10" fill="#2D2D2D"/>
-  
-  <!-- AI Neural Network Lines -->
-  <path d="M176 186 L226 236 M286 236 L336 186" stroke="#8E6C88" stroke-width="2"/>
+  <!-- Binary Elements -->
+  <text x="226" y="286" fill="#F5E6D3" font-family="monospace" font-size="24">1</text>
+  <text x="276" y="286" fill="#F5E6D3" font-family="monospace" font-size="24">0</text>
 </svg>
