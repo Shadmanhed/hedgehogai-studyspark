@@ -42,23 +42,25 @@ serve(async (req) => {
           contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
           contentType?.includes('application/vnd.ms-powerpoint')) {
         contentToSummarize = `Please analyze this ${contentType} document available at: ${fileUrl}. Your task is to:
-1. Create a cohesive, flowing summary that reads like a well-structured article
-2. Extract and organize ALL key information while maintaining natural flow
-3. Include:
-   - Main concepts with complete explanations
-   - Supporting details and examples
-   - Key definitions and technical terms
-   - Important statistics and data
-   - Practical applications and case studies
-4. Present information in a clear, engaging narrative style
-5. Use bullet points only for truly list-worthy items
-6. Maintain proper paragraph structure and transitions
-7. Ensure the summary flows naturally without mentioning slide numbers or sections
-8. Format the content with clear headings when topic changes
-9. Keep all specific examples and technical details
-10. Verify accuracy of all information
+1. Create an easy-to-understand summary that highlights key terminology
+2. Structure the content in a clear, logical flow with these elements:
+   - Begin with a brief overview of the main topic
+   - Define and explain important terms and concepts clearly
+   - Provide real-world examples and applications
+   - Include key statistics and data in context
+3. Highlight and explain important terminology by:
+   - Defining technical terms in simple language
+   - Providing examples of how terms are used
+   - Connecting terms to practical applications
+4. Maintain a natural, conversational tone while being informative
+5. Use clear paragraph breaks and headings for different topics
+6. Include bullet points only for truly important lists or key points
+7. Ensure smooth transitions between topics
+8. Keep all specific examples and technical details, but explain them clearly
+9. Format the content for easy reading and understanding
+10. Double-check accuracy of all information
 
-Important: Create a polished, professional summary that reads like a cohesive document rather than a collection of slides.`;
+Important: Create a polished, accessible summary that explains complex topics clearly while preserving all important information.`;
       } else {
         contentToSummarize = await fileResponse.text();
       }
@@ -85,23 +87,23 @@ Important: Create a polished, professional summary that reads like a cohesive do
         messages: [
           {
             role: 'system',
-            content: `You are an expert academic writer and editor who creates polished, professional summaries. Your task is to:
-1. Create flowing, cohesive summaries that read like well-written articles
-2. Maintain natural paragraph structure and smooth transitions
-3. Use clear headings for major topic changes
-4. Include all specific details while maintaining readability
-5. Format content in an engaging, professional style
-6. Use bullet points sparingly and only when truly appropriate
-7. Never mention slide numbers or source sections
-8. Ensure proper spacing and visual organization
-9. Double-check all facts and figures for accuracy
-10. Create summaries that could stand alone as professional documents
+            content: `You are an expert educator and writer who creates clear, accessible summaries. Your task is to:
+1. Create engaging summaries that explain complex topics clearly
+2. Define and explain important terminology in simple terms
+3. Use clear headings to organize different topics
+4. Break down complex concepts into understandable parts
+5. Include practical examples and applications
+6. Maintain an educational, approachable tone
+7. Use simple language while preserving technical accuracy
+8. Create clear paragraph structure and transitions
+9. Highlight key terms and concepts effectively
+10. Ensure summaries are both informative and easy to understand
 
-Remember: The goal is to create a polished, cohesive summary that reads like a professional article or report, not a collection of slides or notes.`
+Remember: The goal is to create an accessible, educational summary that explains complex topics clearly while preserving all important information and terminology.`
           },
           {
             role: 'user',
-            content: `Please provide a comprehensive, well-structured summary of the following content: ${contentToSummarize}`
+            content: `Please provide a clear, well-structured summary that explains all important concepts and terminology from the following content: ${contentToSummarize}`
           }
         ],
         temperature: 0.3,
