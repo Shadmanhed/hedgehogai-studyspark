@@ -42,21 +42,23 @@ serve(async (req) => {
           contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
           contentType?.includes('application/vnd.ms-powerpoint')) {
         contentToSummarize = `Please analyze this ${contentType} document available at: ${fileUrl}. Your task is to:
-1. Extract and organize ALL information with extreme attention to detail
-2. Include:
-   - Main concepts and their complete explanations
-   - All supporting details and examples
-   - Technical terms and their definitions
-   - Numerical data and statistics
-   - Relationships between concepts
-   - Case studies and practical applications
-3. Maintain the original structure and hierarchy
-4. Present information in a clear, logical flow
-5. Use bullet points for key concepts and examples
-6. Include ALL specific examples and technical details
-7. Verify accuracy of information through cross-referencing
-8. Highlight important definitions and concepts
-Do not omit any content, no matter how minor it might seem.`;
+1. Create a cohesive, flowing summary that reads like a well-structured article
+2. Extract and organize ALL key information while maintaining natural flow
+3. Include:
+   - Main concepts with complete explanations
+   - Supporting details and examples
+   - Key definitions and technical terms
+   - Important statistics and data
+   - Practical applications and case studies
+4. Present information in a clear, engaging narrative style
+5. Use bullet points only for truly list-worthy items
+6. Maintain proper paragraph structure and transitions
+7. Ensure the summary flows naturally without mentioning slide numbers or sections
+8. Format the content with clear headings when topic changes
+9. Keep all specific examples and technical details
+10. Verify accuracy of all information
+
+Important: Create a polished, professional summary that reads like a cohesive document rather than a collection of slides.`;
       } else {
         contentToSummarize = await fileResponse.text();
       }
@@ -83,24 +85,23 @@ Do not omit any content, no matter how minor it might seem.`;
         messages: [
           {
             role: 'system',
-            content: `You are an expert academic summarizer with exceptional attention to detail. Your task is to:
-1. Create a comprehensive summary that captures EVERY piece of information
-2. Maintain all specific details, examples, and technical terms
-3. Preserve the original structure and hierarchy
-4. Include ALL numerical data, dates, and specific examples
-5. Use bullet points to highlight key concepts and examples
-6. Never skip or summarize away any detail
-7. Present information in a clear, engaging style
-8. Double-check all facts and figures for accuracy
-9. Use clear headings for different sections
-10. Format the output with proper spacing and organization
+            content: `You are an expert academic writer and editor who creates polished, professional summaries. Your task is to:
+1. Create flowing, cohesive summaries that read like well-written articles
+2. Maintain natural paragraph structure and smooth transitions
+3. Use clear headings for major topic changes
+4. Include all specific details while maintaining readability
+5. Format content in an engaging, professional style
+6. Use bullet points sparingly and only when truly appropriate
+7. Never mention slide numbers or source sections
+8. Ensure proper spacing and visual organization
+9. Double-check all facts and figures for accuracy
+10. Create summaries that could stand alone as professional documents
 
-Remember: The goal is to create a detailed yet readable summary that could be used to reconstruct the original content.
-Use bullet points (•) for listing key points and examples.`
+Remember: The goal is to create a polished, cohesive summary that reads like a professional article or report, not a collection of slides or notes.`
           },
           {
             role: 'user',
-            content: `Please provide a comprehensive academic summary of the following content: ${contentToSummarize}`
+            content: `Please provide a comprehensive, well-structured summary of the following content: ${contentToSummarize}`
           }
         ],
         temperature: 0.3,
