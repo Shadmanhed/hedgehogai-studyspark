@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Auth } from "@/components/Auth";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
-import { AuthError, Session, AuthChangeEvent } from "@supabase/supabase-js";
+import { AuthError, Session, AuthChangeEvent, AuthApiError } from "@supabase/supabase-js";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -25,12 +25,37 @@ const Login = () => {
   useEffect(() => {
     const handleAuthError = (error: AuthError) => {
       console.error("Auth error:", error);
-      if (error.message.includes("Password should be at least 6 characters")) {
-        toast({
-          title: "Password Error",
-          description: "Password must be at least 6 characters long",
-          variant: "destructive",
-        });
+      
+      if (error instanceof AuthApiError) {
+        switch (error.status) {
+          case 400:
+            if (error.message.includes("User already registered")) {
+              toast({
+                title: "Account Already Exists",
+                description: "An account with this email already exists. Please try signing in instead.",
+                variant: "destructive",
+              });
+            } else if (error.message.includes("Password should be at least 6 characters")) {
+              toast({
+                title: "Password Error",
+                description: "Password must be at least 6 characters long",
+                variant: "destructive",
+              });
+            } else {
+              toast({
+                title: "Authentication Error",
+                description: error.message,
+                variant: "destructive",
+              });
+            }
+            break;
+          default:
+            toast({
+              title: "Authentication Error",
+              description: error.message,
+              variant: "destructive",
+            });
+        }
       } else {
         toast({
           title: "Authentication Error",
