@@ -20,11 +20,11 @@ export const Auth = () => {
       });
 
       // Remove any existing auth listeners to prevent automatic login
-      const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
         if (event === 'PASSWORD_RECOVERY') {
           console.log('Password recovery event detected');
-          // Prevent automatic redirect
-          return false;
+          // Instead of returning boolean, we just prevent default behavior
+          return;
         }
       });
 
