@@ -2,7 +2,7 @@ import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 import { supabase } from "@/integrations/supabase/client";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { useEffect } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 
 export const Auth = () => {
   const { toast } = useToast();
@@ -16,7 +16,21 @@ export const Auth = () => {
       toast({
         title: "Password Reset",
         description: "Please enter your new password below",
+        duration: 10000, // Keep the toast visible longer
       });
+
+      // Remove any existing auth listeners to prevent automatic login
+      const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
+        if (event === 'PASSWORD_RECOVERY') {
+          console.log('Password recovery event detected');
+          // Prevent automatic redirect
+          return false;
+        }
+      });
+
+      return () => {
+        subscription.unsubscribe();
+      };
     }
   }, [toast]);
 

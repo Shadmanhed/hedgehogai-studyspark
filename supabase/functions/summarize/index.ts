@@ -22,25 +22,27 @@ const getContentToSummarize = async (fileUrl: string, contentType: string | null
 // Function to generate the prompt for document analysis
 const generatePromptForDocument = (contentType: string, fileUrl: string): string => {
   return `Please analyze this ${contentType} document available at: ${fileUrl}. Your task is to:
-1. Create an easy-to-understand summary that highlights key terminology
-2. Structure the content in a clear, logical flow with these elements:
-   - Begin with a brief overview of the main topic
-   - Define and explain important terms and concepts clearly
-   - Provide real-world examples and applications
-   - Include key statistics and data in context
-3. Highlight and explain important terminology by:
-   - Defining technical terms in simple language
-   - Providing examples of how terms are used
-   - Connecting terms to practical applications
-4. Maintain a natural, conversational tone while being informative
-5. Use clear paragraph breaks and headings for different topics
-6. Include bullet points only for truly important lists or key points
-7. Ensure smooth transitions between topics
-8. Keep all specific examples and technical details, but explain them clearly
-9. Format the content for easy reading and understanding
-10. Double-check accuracy of all information
+1. Read and analyze EVERY slide/page in detail
+2. Create a comprehensive summary that includes:
+   - The main topic and purpose of the presentation
+   - Key points from EACH slide
+   - Important definitions and concepts AS PRESENTED in the slides
+   - Examples and case studies mentioned
+   - Any data, statistics, or numerical information
+   - Relationships between concepts as shown
+3. Structure the summary with:
+   - A brief overview of the presentation's main topic
+   - Detailed summaries of each major section
+   - Clear explanations of technical terms AS THEY APPEAR in the slides
+   - Integration of examples and applications FROM THE SLIDES
+4. Important guidelines:
+   - Only include information that is actually present in the slides
+   - Do not generate additional examples or definitions
+   - Maintain the original context and meaning
+   - Keep all specific details and technical terms exactly as presented
+   - Follow the presentation's structure and flow
 
-Important: Create a polished, accessible summary that explains complex topics clearly while preserving all important information.`;
+Remember: Your summary should be based SOLELY on the content actually present in the slides/document, without adding external information or examples.`;
 };
 
 // Function to get the system message for the AI

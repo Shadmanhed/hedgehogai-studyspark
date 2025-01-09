@@ -30,21 +30,23 @@ serve(async (req) => {
         contentType?.includes('application/vnd.openxmlformats-officedocument.presentationml.presentation') ||
         contentType?.includes('application/vnd.ms-powerpoint')) {
       content = `Please analyze this ${contentType} file available at: ${fileUrl} and create comprehensive flashcards. Your task is to:
-1. Examine EVERY slide/page with extreme attention to detail
-2. Create flashcards for EVERY key point, concept, and detail, including:
-   - Main concepts and their complete definitions
-   - All supporting details and examples
-   - Every technical term and its full explanation
-   - All numerical data, statistics, and dates
-   - Important relationships between concepts
-   - Specific examples and case studies
-   - Formulas and equations with their applications
-   - Key figures and their significance
-3. Ensure each flashcard focuses on a single, clear concept
-4. Include context and real-world applications where relevant
-5. Create 25-35 detailed flashcards to cover all material thoroughly
-6. Format questions to promote active recall
-7. Provide comprehensive answers that include all relevant details`;
+1. Examine EVERY slide/page and create flashcards ONLY from the content actually present
+2. For each slide/section:
+   - Create flashcards for key concepts AS THEY ARE DEFINED in the document
+   - Include important facts and details EXACTLY as presented
+   - Use examples and applications ONLY from the material
+   - Maintain technical terms and definitions AS SHOWN
+3. Format guidelines:
+   - Front: Clear, focused question about a specific concept from the slides
+   - Back: Answer using ONLY information present in the slides
+4. Important rules:
+   - Do not add external information or examples
+   - Use only definitions and explanations from the document
+   - Keep all technical terms exactly as presented
+   - Maintain the original context and meaning
+5. Create 25-35 flashcards that accurately reflect the document's content
+
+IMPORTANT: Generate flashcards ONLY from information actually present in the document. Do not add external knowledge or examples.`;
     } else {
       content = await fileResponse.text();
     }
