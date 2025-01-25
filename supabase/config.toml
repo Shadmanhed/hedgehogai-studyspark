@@ -26,5 +26,5 @@ enabled = true
 enabled = true
 
 [[functions]]
-name = "summarize"
+[functions.summarize]
 verify_jwt = true
