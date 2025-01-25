@@ -103,15 +103,17 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        model: "deepseek-ai/DeepSeek-R1",
+        max_completion_tokens: 5000,
+        temperature: 0.3,
+        top_p: 1,
         messages: [
           getSystemMessage(),
           {
             role: 'user',
             content: `Please provide a clear, well-structured summary that explains all important concepts and terminology from the following content: ${contentToSummarize}`
           }
-        ],
-        temperature: 0.3,
-        max_tokens: 4000,
+        ]
       }),
     });
 
