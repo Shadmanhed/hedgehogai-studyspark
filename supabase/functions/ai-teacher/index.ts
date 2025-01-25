@@ -12,7 +12,7 @@ serve(async (req) => {
 
   try {
     const { question } = await req.json()
-    const groqApiKey = Deno.env.get('Groq_API')
+    const klustrApiKey = Deno.env.get('KLUSTR_API_KEY')
 
     if (!question) {
       return new Response(
@@ -23,14 +23,13 @@ serve(async (req) => {
 
     console.log('Processing question:', question)
 
-    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    const response = await fetch('https://api.klustr.ai/v1/chat', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${groqApiKey}`,
+        'Authorization': `Bearer ${klustrApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'mixtral-8x7b-32768',
         messages: [
           {
             role: 'system',
@@ -47,7 +46,7 @@ serve(async (req) => {
     })
 
     if (!response.ok) {
-      throw new Error(`Groq API error: ${response.statusText}`)
+      throw new Error(`Klustr API error: ${response.statusText}`)
     }
 
     const data = await response.json()
