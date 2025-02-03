@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const klustrApiKey = Deno.env.get('KLUSTR_API_KEY');
+const groqApiKey = Deno.env.get('Groq_API');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -44,19 +44,22 @@ serve(async (req) => {
    - Use only definitions and explanations from the document
    - Keep all technical terms exactly as presented
    - Maintain the original context and meaning
-5. Create 25-35 flashcards that accurately reflect the document's content`;
+5. Create 25-35 flashcards that accurately reflect the document's content
+
+IMPORTANT: Generate flashcards ONLY from information actually present in the document. Do not add external knowledge or examples.`;
     } else {
       content = await fileResponse.text();
     }
 
-    console.log('Sending content to Klustr API...');
-    const response = await fetch('https://api.klustr.ai/v1/chat', {
+    console.log('Sending content to Groq API...');
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${klustrApiKey}`,
+        'Authorization': `Bearer ${groqApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
+        model: 'mixtral-8x7b-32768',
         messages: [
           {
             role: 'system',
@@ -85,15 +88,15 @@ IMPORTANT: Your response must contain ONLY the JSON array, with no additional te
 
     if (!response.ok) {
       const errorData = await response.json();
-      console.error('Klustr API error:', errorData);
-      throw new Error(`Klustr API error: ${errorData.error?.message || 'Unknown error'}`);
+      console.error('Groq API error:', errorData);
+      throw new Error(`Groq API error: ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const data = await response.json();
-    console.log('Klustr API response received');
+    console.log('Groq API response received');
     
     let flashcardsText = data.choices[0].message.content;
-    console.log('Raw Klustr API response content:', flashcardsText);
+    console.log('Raw Groq API response content:', flashcardsText);
     
     flashcardsText = flashcardsText.trim();
     flashcardsText = flashcardsText.replace(/```json\n?/g, '').replace(/```\n?/g, '');

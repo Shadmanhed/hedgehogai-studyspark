@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const klustrApiKey = Deno.env.get('KLUSTR_API_KEY');
+const groqApiKey = Deno.env.get('Groq_API');
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -65,6 +65,64 @@ Remember: The goal is to create an accessible, educational summary that explains
   };
 };
 
+// Function to handle file processing
+const processFile = async (fileUrl: string): Promise<string> => {
+  console.log('Processing file from URL:', fileUrl);
+  const fileResponse = await fetch(fileUrl);
+  if (!fileResponse.ok) {
+    console.error('Failed to fetch file:', fileResponse.status, fileResponse.statusText);
+    throw new Error('Failed to fetch file content');
+  }
+  
+  const contentType = fileResponse.headers.get('content-type');
+  console.log('File content type:', contentType);
+  
+  const contentToSummarize = await getContentToSummarize(fileUrl, contentType);
+  console.log('Successfully processed file content');
+  return contentToSummarize;
+};
+
+// Function to generate summary using Groq API
+const generateSummary = async (contentToSummarize: string): Promise<string> => {
+  console.log('Sending request to Groq API...');
+  
+  const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${groqApiKey}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'mixtral-8x7b-32768',
+      messages: [
+        getSystemMessage(),
+        {
+          role: 'user',
+          content: `Please provide a clear, well-structured summary that explains all important concepts and terminology from the following content: ${contentToSummarize}`
+        }
+      ],
+      temperature: 0.3,
+      max_tokens: 4000,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.error('Groq API error:', errorData);
+    throw new Error(`Groq API error: ${errorData.error?.message || 'Unknown error'}`);
+  }
+
+  const data = await response.json();
+  console.log('Received response from Groq API');
+  
+  if (!data.choices?.[0]?.message?.content) {
+    console.error('Unexpected Groq response format:', data);
+    throw new Error('Invalid response format from Groq API');
+  }
+
+  return data.choices[0].message.content;
+};
+
 // Main handler function
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -75,9 +133,9 @@ serve(async (req) => {
     console.log('Summarize function called');
     const { text, fileUrl } = await req.json();
     
-    if (!klustrApiKey) {
-      console.error('Klustr API key not found');
-      throw new Error('Klustr API key not configured');
+    if (!groqApiKey) {
+      console.error('Groq API key not found');
+      throw new Error('Groq API key not configured');
     }
     
     let contentToSummarize = '';
@@ -86,7 +144,7 @@ serve(async (req) => {
       console.log('Processing text input, length:', text.length);
       contentToSummarize = text;
     } else if (fileUrl) {
-      contentToSummarize = await getContentToSummarize(fileUrl);
+      contentToSummarize = await processFile(fileUrl);
     } else {
       throw new Error('No text or file URL provided');
     }
@@ -95,43 +153,7 @@ serve(async (req) => {
       throw new Error('No content to summarize');
     }
 
-    console.log('Sending request to Klustr API...');
-    const response = await fetch('https://api.klustr.ai/v1/chat', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${klustrApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: "deepseek-ai/DeepSeek-R1",
-        max_completion_tokens: 5000,
-        temperature: 0.3,
-        top_p: 1,
-        messages: [
-          getSystemMessage(),
-          {
-            role: 'user',
-            content: `Please provide a clear, well-structured summary that explains all important concepts and terminology from the following content: ${contentToSummarize}`
-          }
-        ]
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      console.error('Klustr API error:', errorData);
-      throw new Error(`Klustr API error: ${errorData.error?.message || 'Unknown error'}`);
-    }
-
-    const data = await response.json();
-    console.log('Received response from Klustr API');
-    
-    if (!data.choices?.[0]?.message?.content) {
-      console.error('Unexpected Klustr response format:', data);
-      throw new Error('Invalid response format from Klustr API');
-    }
-
-    const summary = data.choices[0].message.content;
+    const summary = await generateSummary(contentToSummarize);
     console.log('Successfully generated summary, length:', summary.length);
 
     return new Response(JSON.stringify({ summary }), {
